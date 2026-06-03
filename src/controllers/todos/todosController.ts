@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
 
-export const getTodos = (req: Request, res: Response) => {
-  res.json({ message: "Hello World" });
+export const getTodos = async (_req: Request, res: Response) => {
+  res.json({ message: "Todos fetched successfully" });
 };
 
-export const createTodo = (req: Request, res: Response) => {
-  res.json({ message: "Hello World" });
+export const createTodo = (_req: Request, res: Response) => {
+  res.json({ message: "Todo created successfully" });
 };
 
-export const updateTodo = (req: Request, res: Response) => {
-  res.json({ message: "Hello World" });
+export const updateTodo = (_req: Request, res: Response) => {
+  res.json({ message: "Todo updated successfully" });
 };
 
-export const deleteTodo = (req: Request, res: Response) => {
-  res.json({ message: "Hello World" });
+export const deleteTodo = (_req: Request, res: Response) => {
+  res.json({ message: "Todo deleted successfully" });
 };

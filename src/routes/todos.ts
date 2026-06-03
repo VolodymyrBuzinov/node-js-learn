@@ -5,10 +5,11 @@ import {
   getTodos,
   updateTodo,
 } from "../controllers/todos/todosController.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const todosRoutes = express.Router();
 
-todosRoutes.get("/", getTodos);
-todosRoutes.post("/", createTodo);
-todosRoutes.patch("/:id", updateTodo);
-todosRoutes.delete("/:id", deleteTodo);
+todosRoutes.get("/", asyncHandler(getTodos));
+todosRoutes.post("/", asyncHandler(createTodo));
+todosRoutes.patch("/:id", asyncHandler(updateTodo));
+todosRoutes.delete("/:id", asyncHandler(deleteTodo));
