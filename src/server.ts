@@ -1,5 +1,4 @@
 import express from "express";
-import type { Request, Response } from "express";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { authRoutes } from "./routes/auth.js";
 import { todosRoutes } from "./routes/todos.js";

@@ -11,6 +11,10 @@ export const ERROR_MESSAGES = {
   ID_REQUIRED: "ID is required",
   GENDER_NOT_VALID: "Gender is not valid",
   ID_NOT_VALID: "ID is not valid",
+  INVALID_EMAIL_OR_PASSWORD: "Invalid email or password",
+  EMAIL_ALREADY_EXISTS: "Email already exists",
+  SOMETHING_WENT_WRONG: "Something went wrong",
+  USER_NOT_FOUND: "User not found",
 };
 
 export const SUCCESS_MESSAGES = {
