@@ -15,12 +15,16 @@ export const ERROR_MESSAGES = {
   EMAIL_ALREADY_EXISTS: "Email already exists",
   SOMETHING_WENT_WRONG: "Something went wrong",
   USER_NOT_FOUND: "User not found",
+  TODO_NOT_FOUND: "Todo not found",
 };
 
 export const SUCCESS_MESSAGES = {
   SIGNIN_SUCCESS: "You are signed in",
   SIGNUP_SUCCESS: "You are signed up",
   LOGOUT_SUCCESS: "You are logged out",
+  TODO_CREATED: "Todo created successfully",
+  TODO_UPDATED: "Todo updated successfully",
+  TODO_DELETED: "Todo deleted successfully",
 };
 
 export enum CODE_STATUS {
@@ -32,6 +36,7 @@ export enum CODE_STATUS {
   SUCCESS = 200,
   CREATED = 201,
   NO_CONTENT = 204,
+  OK,
 }
 
 export const GENDERS = ["male", "female", "other"] as const;
