@@ -1,42 +1,10 @@
-export const ERROR_MESSAGES = {
-  EMAIL_REQUIRED: "Email is required",
-  EMAIL_INVALID: "Email is invalid",
-  PASSWORD_REQUIRED: "Password is required",
-  PASSWORD_MIN_LENGTH: "Password must be at least 8 characters long",
-  PASSWORD_MAX_LENGTH: "Password must be less than 12 characters long",
-  PASSWORD_INVALID:
-    "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-  GENDER_REQUIRED: "Gender is required",
-  NAME_REQUIRED: "Name is required",
-  ID_REQUIRED: "ID is required",
-  GENDER_NOT_VALID: "Gender is not valid",
-  ID_NOT_VALID: "ID is not valid",
-  INVALID_EMAIL_OR_PASSWORD: "Invalid email or password",
-  EMAIL_ALREADY_EXISTS: "Email already exists",
-  SOMETHING_WENT_WRONG: "Something went wrong",
-  USER_NOT_FOUND: "User not found",
-  TODO_NOT_FOUND: "Todo not found",
+export const HTTP_STATUS_CODES = {
+  NOT_FOUND: 404,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  INTERNAL_SERVER_ERROR: 500,
+  SUCCESS: 200,
+  CREATED: 201,
+  NO_CONTENT: 204,
 };
-
-export const SUCCESS_MESSAGES = {
-  SIGNIN_SUCCESS: "You are signed in",
-  SIGNUP_SUCCESS: "You are signed up",
-  LOGOUT_SUCCESS: "You are logged out",
-  TODO_CREATED: "Todo created successfully",
-  TODO_UPDATED: "Todo updated successfully",
-  TODO_DELETED: "Todo deleted successfully",
-};
-
-export enum CODE_STATUS {
-  BAD_REQUEST = 400,
-  UNAUTHORIZED = 401,
-  FORBIDDEN = 403,
-  NOT_FOUND = 404,
-  INTERNAL_SERVER_ERROR = 500,
-  SUCCESS = 200,
-  CREATED = 201,
-  NO_CONTENT = 204,
-  OK,
-}
-
-export const GENDERS = ["male", "female", "other"] as const;
