@@ -32,7 +32,7 @@ export const loginUserService = async (email: string, password: string) => {
   return user;
 };
 
-export const logoutUserService = async (userId: string) => {
+export const logoutUserService = async (userId: number) => {
   const users = await getUsersData();
   const user = users.find((user) => user.id === userId);
   if (!user) {
@@ -42,7 +42,7 @@ export const logoutUserService = async (userId: string) => {
 };
 
 export const updateUserService = async (
-  userId: string,
+  userId: number,
   { name, age, weight, gender, height, activityLevel }: Partial<User>
 ) => {
   const users = await getUsersData();

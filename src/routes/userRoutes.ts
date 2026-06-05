@@ -5,9 +5,27 @@ import {
   logoutUser,
   updateUser,
 } from "../controllers/userControllers.js";
+import { validateSchema } from "../validators/validation.js";
+import {
+  loginUserValidator,
+  updateUserValidator,
+  validateUserId,
+} from "../validators/userValidators.js";
 
 export const userRoutes = express.Router();
 
-userRoutes.get("/login", asyncHandler(loginUser));
-userRoutes.post("/logout", asyncHandler(logoutUser));
-userRoutes.patch("/:userId", asyncHandler(updateUser));
+userRoutes.post(
+  "/login",
+  validateSchema(loginUserValidator),
+  asyncHandler(loginUser)
+);
+userRoutes.post(
+  "/logout",
+  validateSchema(validateUserId),
+  asyncHandler(logoutUser)
+);
+userRoutes.patch(
+  "/:userId",
+  validateSchema(updateUserValidator),
+  asyncHandler(updateUser)
+);

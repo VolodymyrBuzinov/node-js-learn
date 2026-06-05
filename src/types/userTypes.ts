@@ -1,5 +1,5 @@
 export type User = {
-  id: string;
+  id: number;
   name: string;
   email: string;
   password: string;
@@ -12,5 +12,8 @@ export type User = {
   activityLevel: ActivityLevel;
 };
 
-export type Gender = "чоловік" | "жінка";
-export type ActivityLevel = "малий" | "середній" | "високий";
+export type Gender = (typeof GENDER_VALUES)[number];
+export type ActivityLevel = (typeof ACTIVITY_LEVEL_VALUES)[number];
+
+export const GENDER_VALUES = ["чоловік", "жінка"] as const;
+export const ACTIVITY_LEVEL_VALUES = ["малий", "середній", "високий"] as const;

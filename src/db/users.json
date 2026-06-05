@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Олексій Коваленко",
+    "email": "oleksiy@example.com",
+    "password": "Password1!",
+    "createdAt": 1717459200000,
+    "updatedAt": 1717459200000,
+    "age": 28,
+    "weight": 75,
+    "gender": "чоловік",
+    "height": 180,
+    "activityLevel": "середній"
+  },
+  {
+    "id": 2,
+    "name": "Марія Шевченко",
+    "email": "maria@example.com",
+    "password": "Test1234!",
+    "createdAt": 1717545600000,
+    "updatedAt": 1717545600000,
+    "age": 24,
+    "weight": 58,
+    "gender": "жінка",
+    "height": 165,
+    "activityLevel": "високий"
+  },
+  {
+    "id": 3,
+    "name": "Іван Петренко",
+    "email": "ivan@example.com",
+    "password": "Admin123!",
+    "createdAt": 1717632000000,
+    "updatedAt": 1717632000000,
+    "age": 35,
+    "weight": 82,
+    "gender": "чоловік",
+    "height": 175,
+    "activityLevel": "малий"
+  }
+]
