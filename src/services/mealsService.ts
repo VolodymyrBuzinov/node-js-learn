@@ -25,3 +25,9 @@ export const getMealByIdService = async (id: number) => {
   }
   return meal;
 };
+
+export const getRecommendedMealsService = async (userId: number) => {
+  const meals = await getMealsService();
+  const recommendedMeals = meals.filter(() => Math.random() > 0.5);
+  return recommendedMeals;
+};

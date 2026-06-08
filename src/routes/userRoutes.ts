@@ -11,6 +11,7 @@ import {
   updateUserValidator,
   validateUserId,
 } from "../validators/userValidators.js";
+import { getRecommendedMeals } from "@/controllers/mealsController.js";
 
 export const userRoutes = express.Router();
 
@@ -29,3 +30,5 @@ userRoutes.patch(
   validateSchema(updateUserValidator),
   asyncHandler(updateUser)
 );
+
+userRoutes.get("/:userId/recommended-meals", asyncHandler(getRecommendedMeals));
