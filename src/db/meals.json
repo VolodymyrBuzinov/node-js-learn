@@ -1,0 +1,145 @@
+[
+  {
+    "id": 1,
+    "name": "Овсянка з ягодами",
+    "description": "Класичний сніданок з вівсяних пластівців, свіжих ягід та меду",
+    "imageUrl": "https://images.unsplash.com/photo-1517673400265-9b023e70a935?w=400",
+    "composition": {
+      "calories": 320,
+      "protein": 10,
+      "carbohydrates": 52,
+      "fat": 8,
+      "products": ["вівсяні пластівці", "полуниця", "чорниця", "мед", "молоко"]
+    }
+  },
+  {
+    "id": 2,
+    "name": "Омлет з овочами",
+    "description": "Пишний омлет з яєць, болгарського перцю, помідорів та зелені",
+    "imageUrl": "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+    "composition": {
+      "calories": 280,
+      "protein": 18,
+      "carbohydrates": 6,
+      "fat": 20,
+      "products": ["яйця", "болгарський перець", "помідори", "цибуля", "олія"]
+    }
+  },
+  {
+    "id": 3,
+    "name": "Борщ український",
+    "description": "Традиційний борщ зі свинини, буряка, капусти та сметани",
+    "imageUrl": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400",
+    "composition": {
+      "calories": 450,
+      "protein": 22,
+      "carbohydrates": 38,
+      "fat": 24,
+      "products": [
+        "свинина",
+        "буряк",
+        "капуста",
+        "картопля",
+        "морква",
+        "сметана"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "name": "Курячий бульйон",
+    "description": "Легкий домашній бульйон з курки, локшини та зеленою цибулею",
+    "imageUrl": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400",
+    "composition": {
+      "calories": 210,
+      "protein": 16,
+      "carbohydrates": 18,
+      "fat": 8,
+      "products": ["курка", "локшина", "морква", "цибуля", "зелена цибуля"]
+    }
+  },
+  {
+    "id": 5,
+    "name": "Вареники з картоплею",
+    "description": "Домашні вареники з начинкою з картоплі та цибулі, подані зі сметаною",
+    "imageUrl": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400",
+    "composition": {
+      "calories": 380,
+      "protein": 12,
+      "carbohydrates": 58,
+      "fat": 12,
+      "products": ["борошно", "картопля", "цибуля", "яйце", "сметана"]
+    }
+  },
+  {
+    "id": 6,
+    "name": "Гречка з куркою",
+    "description": "Гречана каша з тушкованою курячою грудкою та овочами",
+    "imageUrl": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400",
+    "composition": {
+      "calories": 420,
+      "protein": 32,
+      "carbohydrates": 45,
+      "fat": 10,
+      "products": ["гречка", "куряча грудка", "морква", "цибуля", "олія"]
+    }
+  },
+  {
+    "id": 7,
+    "name": "Салат Цезар",
+    "description": "Салат з romaine, курячим філе, пармезаном та соусом Цезар",
+    "imageUrl": "https://images.unsplash.com/photo-1550304943-4f24f11d0f8a?w=400",
+    "composition": {
+      "calories": 350,
+      "protein": 28,
+      "carbohydrates": 12,
+      "fat": 22,
+      "products": [
+        "салат romaine",
+        "куряча грудка",
+        "пармезан",
+        "сухарики",
+        "соус Цезар"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "name": "Запечена риба з овочами",
+    "description": "Філе лосося, запечене з броколі, кабачком та лимоном",
+    "imageUrl": "https://images.unsplash.com/photo-1467003909585-2f8a2b744874?w=400",
+    "composition": {
+      "calories": 390,
+      "protein": 34,
+      "carbohydrates": 8,
+      "fat": 24,
+      "products": ["лосось", "броколі", "кабачок", "лимон", "олія"]
+    }
+  },
+  {
+    "id": 9,
+    "name": "Грецький йогурт з горіхами",
+    "description": "Перекус із натурального йогурту, волоських горіхів та меду",
+    "imageUrl": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400",
+    "composition": {
+      "calories": 220,
+      "protein": 14,
+      "carbohydrates": 18,
+      "fat": 12,
+      "products": ["грецький йогурт", "волоські горіхи", "мед"]
+    }
+  },
+  {
+    "id": 10,
+    "name": "Смузі з бананом",
+    "description": "Енергетичний смузі з банана, шпинату, молока та арахісової пасти",
+    "imageUrl": "https://images.unsplash.com/photo-1505252587541-329847f25821?w=400",
+    "composition": {
+      "calories": 290,
+      "protein": 10,
+      "carbohydrates": 42,
+      "fat": 10,
+      "products": ["банан", "шпинат", "молоко", "арахісова паста"]
+    }
+  }
+]
