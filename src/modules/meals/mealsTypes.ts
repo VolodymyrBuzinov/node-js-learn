@@ -1,8 +1,11 @@
+export type MealType = "breakfast" | "lunch" | "dinner";
+
 export type Meal = {
   id: number;
   name: string;
   description: string;
   imageUrl: string;
+  type: MealType;
   composition: {
     calories: number;
     protein: number;
