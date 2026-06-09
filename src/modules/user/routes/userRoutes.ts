@@ -1,17 +1,17 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "@/utils/asyncHandler.js";
 import express from "express";
 import {
   loginUser,
   logoutUser,
   updateUser,
 } from "../controllers/userControllers.js";
-import { validateSchema } from "../validators/validation.js";
+import { validateSchema } from "@/utils/validation.js";
 import {
   loginUserValidator,
   updateUserValidator,
   validateUserId,
 } from "../validators/userValidators.js";
-import { getRecommendedMeals } from "@/controllers/mealsController.js";
+import { getRecommendedMeals } from "@/modules/meals/controllers/mealsController.js";
 
 export const userRoutes = express.Router();
 

@@ -1,4 +1,4 @@
-import { HTTP_STATUS_CODES } from "@/consts.js";
+import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { NextFunction, Request, Response } from "express";
 import z, { ZodError } from "zod";
 

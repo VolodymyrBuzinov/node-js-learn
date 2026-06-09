@@ -1,7 +1,7 @@
 import express from "express";
 import { errorHandler } from "./middlewares/errorHandler.js";
-import { userRoutes } from "./routes/userRoutes.js";
-import { mealsRoutes } from "./routes/mealsRoutes.js";
+import { userRoutes } from "@/modules/user/routes/userRoutes.js";
+import { mealsRoutes } from "@/modules/meals/routes/mealsRoutes.js";
 
 const app = express();
 

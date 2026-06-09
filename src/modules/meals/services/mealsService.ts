@@ -1,10 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
-import { AppError } from "./appError.js";
-import { HTTP_STATUS_CODES } from "@/consts.js";
-import { Meal } from "@/types/userTypes.js";
+import { AppError } from "@/services/appError.js";
+import { HTTP_STATUS_CODES } from "@/config/consts.js";
+import { Meal } from "@/modules/meals/mealsTypes.js";
 
-const mealsPath = path.join(process.cwd(), "src", "db", "meals.json");
+const mealsPath = path.join(process.cwd(), "src", "config", "db", "meals.json");
 
 const getMealsData = async () => {
   const meals = await fs.readFile(mealsPath, "utf-8");

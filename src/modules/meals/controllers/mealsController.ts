@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { HTTP_STATUS_CODES } from "@/consts.js";
+import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import {
   getMealByIdService,
   getMealsService,
   getRecommendedMealsService,
-} from "@/services/mealsService.js";
+} from "@/modules/meals/services/mealsService.js";
 
 export const getMeals = async (req: Request, res: Response) => {
   const meals = await getMealsService();

@@ -1,10 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
-import { AppError } from "./appError.js";
-import { HTTP_STATUS_CODES } from "@/consts.js";
-import { User } from "@/types/userTypes.js";
+import { AppError } from "@/services/appError.js";
+import { HTTP_STATUS_CODES } from "@/config/consts.js";
+import { User } from "@/modules/user/userTypes.js";
 
-const usersPath = path.join(process.cwd(), "src", "db", "users.json");
+const usersPath = path.join(process.cwd(), "src", "config", "db", "users.json");
 
 const getUsersData = async () => {
   const users = await fs.readFile(usersPath, "utf-8");

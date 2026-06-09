@@ -1,5 +1,8 @@
 import z from "zod";
-import { ACTIVITY_LEVEL_VALUES, GENDER_VALUES } from "@/types/userTypes.js";
+import {
+  ACTIVITY_LEVEL_VALUES,
+  GENDER_VALUES,
+} from "@/modules/user/userTypes.js";
 
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 20;

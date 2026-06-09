@@ -1,4 +1,7 @@
-import { getMealById, getMeals } from "@/controllers/mealsController.js";
+import {
+  getMealById,
+  getMeals,
+} from "@/modules/meals/controllers/mealsController.js";
 import { asyncHandler } from "@/utils/asyncHandler.js";
 import express from "express";
 

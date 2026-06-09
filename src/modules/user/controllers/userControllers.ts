@@ -3,8 +3,8 @@ import {
   loginUserService,
   logoutUserService,
   updateUserService,
-} from "@/services/userService.js";
-import { HTTP_STATUS_CODES } from "@/consts.js";
+} from "@/modules/user/services/userService.js";
+import { HTTP_STATUS_CODES } from "@/config/consts.js";
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
