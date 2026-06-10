@@ -14,3 +14,5 @@ export type Meal = {
     products: string[];
   };
 };
+
+export const MEAL_TYPE_VALUES = ["breakfast", "lunch", "dinner"] as const;
