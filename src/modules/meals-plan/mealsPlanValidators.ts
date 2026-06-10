@@ -13,5 +13,7 @@ export const mealsPlanValidator = z.object({
       message: "Invalid date format. Please use the format YYYY-MM-DD",
     }
   ),
-  meals: z.array(mealValidator),
+  meals: z.array(mealValidator).refine((meals) => meals.length > 0, {
+    message: "Meals plan must contain at least one meal",
+  }),
 });

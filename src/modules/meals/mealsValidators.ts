@@ -1,6 +1,12 @@
 import z from "zod";
 import { MEAL_TYPE_VALUES } from "./mealsTypes.js";
 
+export const mealProductValidator = z.object({
+  name: z.string(),
+  count: z.number(),
+  unit: z.string(),
+});
+
 export const mealValidator = z.object({
   id: z.number(),
   name: z.string(),
@@ -12,6 +18,6 @@ export const mealValidator = z.object({
     protein: z.number(),
     carbohydrates: z.number(),
     fat: z.number(),
-    products: z.array(z.string()),
+    products: z.array(mealProductValidator),
   }),
 });

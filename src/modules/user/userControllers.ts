@@ -5,7 +5,7 @@ import { HTTP_STATUS_CODES } from "@/config/consts.js";
 export const getUserById = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const user = await getUserByIdService(Number(userId));
-  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: { user } });
+  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: { ...user } });
 };
 
 export const updateUser = async (req: Request, res: Response) => {
@@ -21,5 +21,5 @@ export const updateUser = async (req: Request, res: Response) => {
   });
   return res
     .status(HTTP_STATUS_CODES.SUCCESS)
-    .json({ message: "User updated successfully", data: { user } });
+    .json({ message: "User updated successfully", data: { ...user } });
 };

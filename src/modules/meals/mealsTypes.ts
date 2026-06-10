@@ -1,5 +1,11 @@
 export type MealType = "breakfast" | "lunch" | "dinner";
 
+export type MealProduct = {
+  name: string;
+  count: number;
+  unit: string;
+};
+
 export type Meal = {
   id: number;
   name: string;
@@ -11,7 +17,7 @@ export type Meal = {
     protein: number;
     carbohydrates: number;
     fat: number;
-    products: string[];
+    products: MealProduct[];
   };
 };
 
