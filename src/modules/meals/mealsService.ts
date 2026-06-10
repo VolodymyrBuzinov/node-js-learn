@@ -6,7 +6,7 @@ import { Meal } from "@/modules/meals/mealsTypes.js";
 
 const mealsPath = path.join(process.cwd(), "src", "config", "db", "meals.json");
 
-const getMealsData = async () => {
+export const getMealsService = async () => {
   const meals = await fs.readFile(mealsPath, "utf-8");
   if (!meals) {
     throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "Something went wrong");
@@ -15,19 +15,11 @@ const getMealsData = async () => {
   return (Array.isArray(mealsArray) ? mealsArray : []) as Meal[];
 };
 
-export const getMealsService = async () => await getMealsData();
-
 export const getMealByIdService = async (id: number) => {
-  const meals = await getMealsData();
+  const meals = await getMealsService();
   const meal = meals.find((meal) => meal.id === id);
   if (!meal) {
     throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Meal not found");
   }
   return meal;
-};
-
-export const getRecommendedMealsService = async (userId: number) => {
-  const meals = await getMealsService();
-  const recommendedMeals = meals.filter(() => Math.random() > 0.5);
-  return recommendedMeals;
 };

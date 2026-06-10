@@ -8,3 +8,5 @@ export const HTTP_STATUS_CODES = {
   CREATED: 201,
   NO_CONTENT: 204,
 };
+
+export const DATE_FORMAT = "yyyy-MM-dd";
