@@ -1,5 +1,5 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
-import { getUsersData } from "@/modules/user/services/userService.js";
+import { getUsersData } from "@/modules/user/userService.js";
 import { AppError } from "@/services/appError.js";
 
 export const loginUserService = async (email: string, password: string) => {

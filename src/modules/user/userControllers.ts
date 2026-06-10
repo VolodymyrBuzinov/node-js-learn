@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-import {
-  getUserByIdService,
-  updateUserService,
-} from "@/modules/user/services/userService.js";
+import { getUserByIdService, updateUserService } from "./userService.js";
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
 
 export const getUserById = async (req: Request, res: Response) => {

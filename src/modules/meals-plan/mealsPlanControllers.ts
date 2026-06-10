@@ -5,7 +5,7 @@ import {
   deleteMealsPlanService,
   getMealsPlanByUserIdAndDateService,
   updateMealsPlanService,
-} from "../services/mealsServices.js";
+} from "./mealsServices.js";
 
 export const getMealsPlanByUserId = async (req: Request, res: Response) => {
   const { userId, date } = req.params;

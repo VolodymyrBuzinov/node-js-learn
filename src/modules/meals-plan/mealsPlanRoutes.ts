@@ -5,7 +5,7 @@ import {
   deleteMealsPlan,
   getMealsPlanByUserId,
   updateMealsPlan,
-} from "../controllers/mealsPlanControllers.js";
+} from "./mealsPlanControllers.js";
 
 export const mealsPlanRoutes = express.Router();
 

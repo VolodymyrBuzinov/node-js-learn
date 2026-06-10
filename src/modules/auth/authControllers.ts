@@ -1,8 +1,5 @@
 import { Response, Request } from "express";
-import {
-  loginUserService,
-  logoutUserService,
-} from "../services/authService.js";
+import { loginUserService, logoutUserService } from "./authService.js";
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
 
 export const loginUser = async (req: Request, res: Response) => {

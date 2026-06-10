@@ -4,7 +4,7 @@ import {
   getMealByIdService,
   getMealsService,
   getRecommendedMealsService,
-} from "@/modules/meals/services/mealsService.js";
+} from "./mealsService.js";
 
 export const getMeals = async (req: Request, res: Response) => {
   const meals = await getMealsService();
