@@ -8,7 +8,8 @@ import {
 } from "./mealsPlanServices.js";
 
 export const getMealsPlanByUserId = async (req: Request, res: Response) => {
-  const { userId, date } = req.params;
+  const { userId } = req.params;
+  const { date } = req.query;
   const mealsPlan = await getMealsPlanByUserIdAndDateService(
     Number(userId),
     String(date)

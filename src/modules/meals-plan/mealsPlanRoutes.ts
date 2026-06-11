@@ -11,7 +11,7 @@ import { mealsPlanValidator } from "./mealsPlanValidators.js";
 
 export const mealsPlanRoutes = express.Router();
 
-mealsPlanRoutes.get("/:id", asyncHandler(getMealsPlanByUserId));
+mealsPlanRoutes.get("/:userId", asyncHandler(getMealsPlanByUserId));
 mealsPlanRoutes.post(
   "/",
   validateSchema(mealsPlanValidator),
