@@ -9,11 +9,6 @@ import { User } from "../user/userTypes.js";
 import fs from "fs/promises";
 import { AppError } from "@/services/appError.js";
 
-export const getUsersAsAdminService = async () => {
-  const users = await getUsersData();
-  return users;
-};
-
 export const createUserAsAdminService = async (
   name: string,
   email: string,

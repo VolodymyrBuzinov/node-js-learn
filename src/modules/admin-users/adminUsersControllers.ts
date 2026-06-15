@@ -3,13 +3,19 @@ import { Request, Response } from "express";
 import {
   createUserAsAdminService,
   deleteUserAsAdminService,
-  getUsersAsAdminService,
   updateUserAsAdminService,
 } from "./adminUsersServices.js";
+import { getUserByIdService, getUsersData } from "../user/userService.js";
 
 export const getUsersAsAdmin = async (_req: Request, res: Response) => {
-  const users = await getUsersAsAdminService();
+  const users = await getUsersData();
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: { users } });
+};
+
+export const getUserByIdAsAdmin = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const user = await getUserByIdService(Number(userId));
+  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: { user } });
 };
 
 export const createUserAsAdmin = async (req: Request, res: Response) => {
