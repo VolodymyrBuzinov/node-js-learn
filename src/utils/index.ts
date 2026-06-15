@@ -1,6 +1,6 @@
 import { ActivityLevel, Gender, User } from "@/modules/user/userTypes.js";
 
-const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
+const ACTIVITY_MULTIPLIERS: Record<string, number> = {
   малий: 1.2,
   середній: 1.55,
   високий: 1.725,
