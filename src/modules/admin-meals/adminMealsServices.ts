@@ -1,10 +1,9 @@
-import {
-  getMealByIdService,
-  getMealsService,
-  mealsPath,
-} from "../meals/mealsService.js";
+import path from "path";
+import { getMealByIdService, getMealsService } from "../meals/mealsService.js";
 import { Meal } from "../meals/mealsTypes.js";
 import fs from "fs/promises";
+
+const mealsPath = path.join(process.cwd(), "src", "config", "db", "meals.json");
 
 export const createMealAsAdminService = async (
   meal: Omit<Meal, "id">

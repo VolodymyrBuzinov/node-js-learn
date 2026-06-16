@@ -1,35 +1,30 @@
 import { AppError } from "@/services/appError.js";
 import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
-import { User, UserRow } from "@/modules/user/userTypes.js";
+import { User } from "@/modules/user/userTypes.js";
 import { pool } from "@/config/db/pool.js";
 import { format } from "date-fns";
 
-const mapUser = (row: UserRow) => ({
-  activityLevel: row.activity_level,
-  createdAt: row.created_at,
-  updatedAt: row.updated_at,
-  name: row.name,
-  age: row.age,
-  weight: row.weight,
-  gender: row.gender,
-  height: row.height,
-  id: row.id,
-  email: row.email,
-});
-
 export const getUsersData = async () => {
-  const { rows } = await pool.query("SELECT * FROM users");
-  return rows.map((row) => mapUser(row)) as User[];
+  const { rows } = await pool.query(`
+    SELECT id, name, email, password, created_at AS "createdAt", updated_at AS "updatedAt", age, weight, gender, height, activity_level AS "activityLevel"
+    FROM users
+  `);
+  return rows as User[];
 };
 
 export const getUserByIdService = async (userId: number) => {
-  const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [
-    userId,
-  ]);
+  const { rows } = await pool.query(
+    `
+    SELECT id, name, email, password, created_at AS "createdAt", updated_at AS "updatedAt", age, weight, gender, height, activity_level AS "activityLevel"
+    FROM users
+    WHERE id = $1
+  `,
+    [userId]
+  );
   if (!rows.length) {
     throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "User not found");
   }
-  return mapUser(rows[0]) as User;
+  return rows[0] as User;
 };
 
 export const updateUserService = async (

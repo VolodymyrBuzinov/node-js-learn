@@ -22,16 +22,3 @@ export const ACTIVITY_LEVEL_VALUES = [
   "високий",
   "",
 ] as const;
-
-export type UserRow = {
-  activity_level: ActivityLevel;
-  created_at: string;
-  updated_at: string;
-  name: string;
-  age: number;
-  weight: number;
-  gender: Gender;
-  height: number;
-  id: number;
-  email: string;
-};
