@@ -1,35 +1,35 @@
-import fs from "fs/promises";
-import path from "path";
 import { AppError } from "@/services/appError.js";
-import { HTTP_STATUS_CODES } from "@/config/consts.js";
-import { User } from "@/modules/user/userTypes.js";
+import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
+import { User, UserRow } from "@/modules/user/userTypes.js";
+import { pool } from "@/config/db/pool.js";
+import { format } from "date-fns";
 
-export const usersPath = path.join(
-  process.cwd(),
-  "src",
-  "config",
-  "db",
-  "users.json"
-);
+const mapUser = (row: UserRow) => ({
+  activityLevel: row.activity_level,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+  name: row.name,
+  age: row.age,
+  weight: row.weight,
+  gender: row.gender,
+  height: row.height,
+  id: row.id,
+  email: row.email,
+});
 
 export const getUsersData = async () => {
-  const users = await fs.readFile(usersPath, "utf-8");
-
-  if (!users) {
-    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "Invalid users file");
-  }
-  const usersArray = JSON.parse(users);
-
-  return (Array.isArray(usersArray) ? usersArray : []) as User[];
+  const { rows } = await pool.query("SELECT * FROM users");
+  return rows.map((row) => mapUser(row)) as User[];
 };
 
 export const getUserByIdService = async (userId: number) => {
-  const users = await getUsersData();
-  const user = users.find((user) => user.id === userId);
-  if (!user) {
+  const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [
+    userId,
+  ]);
+  if (!rows.length) {
     throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "User not found");
   }
-  return user;
+  return mapUser(rows[0]) as User;
 };
 
 export const updateUserService = async (
@@ -37,9 +37,24 @@ export const updateUserService = async (
   { name, age, weight, gender, height, activityLevel }: Partial<User>
 ) => {
   const user = await getUserByIdService(userId);
-
-  return {
+  const updatedUser = {
     ...user,
     ...{ name, age, weight, gender, height, activityLevel },
+    updatedAt: format(new Date(), DATE_FORMAT),
   };
+  await pool.query(
+    "UPDATE users SET name = $1, age = $2, weight = $3, gender = $4, height = $5, activity_level = $6, updated_at = $7 WHERE id = $8",
+    [
+      updatedUser.name,
+      updatedUser.age,
+      updatedUser.weight,
+      updatedUser.gender,
+      updatedUser.height,
+      updatedUser.activityLevel,
+      format(new Date(), DATE_FORMAT),
+      userId,
+    ]
+  );
+
+  return updatedUser;
 };

@@ -1,13 +1,12 @@
 import { format } from "date-fns";
-import {
-  getUserByIdService,
-  getUsersData,
-  usersPath,
-} from "../user/userService.js";
+import { getUserByIdService, getUsersData } from "../user/userService.js";
 import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
 import { User } from "../user/userTypes.js";
 import fs from "fs/promises";
 import { AppError } from "@/services/appError.js";
+import path from "path";
+
+const usersPath = path.join(process.cwd(), "src", "config", "db", "users.json");
 
 export const createUserAsAdminService = async (
   name: string,
