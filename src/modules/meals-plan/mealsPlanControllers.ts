@@ -2,7 +2,7 @@ import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { Request, Response } from "express";
 import {
   createMealsPlanService,
-  deleteMealsPlanService,
+  resetMealsPlanService,
   getMealsPlanByUserIdAndDateService,
   updateMealsPlanService,
 } from "./mealsPlanServices.js";
@@ -27,10 +27,11 @@ export const updateMealsPlan = async (req: Request, res: Response) => {
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: mealsPlan });
 };
 
-export const deleteMealsPlan = async (req: Request, res: Response) => {
+export const resetMealsPlan = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await deleteMealsPlanService(Number(id));
-  return res
-    .status(HTTP_STATUS_CODES.SUCCESS)
-    .json({ message: "Meals plan deleted successfully" });
+  const mealsPlan = await resetMealsPlanService(Number(id));
+  return res.status(HTTP_STATUS_CODES.SUCCESS).json({
+    message: "Meals plan reset successfully",
+    data: mealsPlan,
+  });
 };

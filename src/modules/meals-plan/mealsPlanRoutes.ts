@@ -2,7 +2,7 @@ import { asyncHandler } from "@/utils/asyncHandler.js";
 import express from "express";
 import {
   createMealsPlan,
-  deleteMealsPlan,
+  resetMealsPlan,
   getMealsPlanByUserId,
   updateMealsPlan,
 } from "./mealsPlanControllers.js";
@@ -22,4 +22,4 @@ mealsPlanRoutes.patch(
   validateSchema(mealsPlanValidator),
   asyncHandler(updateMealsPlan)
 );
-mealsPlanRoutes.delete("/:id", asyncHandler(deleteMealsPlan));
+mealsPlanRoutes.patch("/:id", asyncHandler(resetMealsPlan));
