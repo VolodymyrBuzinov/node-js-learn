@@ -17,9 +17,9 @@ mealsPlanRoutes.post(
   validateSchema(mealsPlanValidator),
   asyncHandler(createMealsPlan)
 );
-mealsPlanRoutes.patch(
-  "/:id",
+mealsPlanRoutes.put(
+  "/:planId",
   validateSchema(mealsPlanValidator),
   asyncHandler(updateMealsPlan)
 );
-mealsPlanRoutes.patch("/:id", asyncHandler(resetMealsPlan));
+mealsPlanRoutes.patch("/:planId/reset", asyncHandler(resetMealsPlan));
