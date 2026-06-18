@@ -2,6 +2,25 @@ import { AppError } from "@/services/appError.js";
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { MealsPlan } from "@/modules/meals-plan/mealsPlanTypes.js";
 import { pool } from "@/config/db/pool.js";
+import pg from "pg";
+
+const withTransaction = async <T>(
+  fn: (client: pg.PoolClient) => Promise<T>
+): Promise<T> => {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+    const result = await fn(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
 
 export const getMealsPlanByUserIdAndDateService = async (
   userId: number,
@@ -50,41 +69,43 @@ export const createMealsPlanService = async (
   mealsIds: number[],
   date: string
 ) => {
-  const { rows: existingPlans } = await pool.query(
-    `
-    SELECT id FROM meals_plans
-    WHERE user_id = $1 AND date = $2
-    `,
-    [userId, date]
-  );
-
-  if (existingPlans.length) {
-    throw new AppError(
-      HTTP_STATUS_CODES.BAD_REQUEST,
-      "Meals plan for this date already exists"
-    );
-  }
-
-  const { rows: newPlans } = await pool.query(
-    `
-    INSERT INTO meals_plans (user_id, date)
-    VALUES ($1, $2)
-    RETURNING id
-    `,
-    [userId, date]
-  );
-
-  const planId = newPlans[0].id;
-
-  for (const mealId of mealsIds) {
-    await pool.query(
+  await withTransaction(async (client) => {
+    const { rows: existingPlans } = await client.query(
       `
-      INSERT INTO meals_plan_items (meals_plan_id, meal_id)
-      VALUES ($1, $2)
+      SELECT id FROM meals_plans
+      WHERE user_id = $1 AND date = $2
       `,
-      [planId, mealId]
+      [userId, date]
     );
-  }
+
+    if (existingPlans.length) {
+      throw new AppError(
+        HTTP_STATUS_CODES.BAD_REQUEST,
+        "Meals plan for this date already exists"
+      );
+    }
+
+    const { rows: newPlans } = await client.query(
+      `
+      INSERT INTO meals_plans (user_id, date)
+      VALUES ($1, $2)
+      RETURNING id
+      `,
+      [userId, date]
+    );
+
+    const planId = newPlans[0].id;
+
+    for (const mealId of mealsIds) {
+      await client.query(
+        `
+        INSERT INTO meals_plan_items (meals_plan_id, meal_id)
+        VALUES ($1, $2)
+        `,
+        [planId, mealId]
+      );
+    }
+  });
 
   return getMealsPlanByUserIdAndDateService(userId, date);
 };
@@ -95,29 +116,33 @@ export const updateMealsPlanService = async (
   mealsIds: number[],
   date: string
 ) => {
-  const { rows: existingPlans } = await pool.query(
-    `
-    SELECT id FROM meals_plans
-    WHERE id = $1 AND user_id = $2 AND date = $3
-    `,
-    [planId, userId, date]
-  );
-  if (!existingPlans.length) {
-    throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Meals plan not found");
-  }
-
-  const existingPlan = existingPlans[0];
-
-  await pool.query(`DELETE FROM meals_plan_items WHERE meals_plan_id = $1`, [
-    existingPlan.id,
-  ]);
-
-  for (const mealId of mealsIds) {
-    await pool.query(
-      `INSERT INTO meals_plan_items (meals_plan_id, meal_id) VALUES ($1, $2)`,
-      [existingPlan.id, mealId]
+  await withTransaction(async (client) => {
+    const { rows: existingPlans } = await client.query(
+      `
+      SELECT id FROM meals_plans
+      WHERE id = $1 AND user_id = $2 AND date = $3
+      `,
+      [planId, userId, date]
     );
-  }
+
+    if (!existingPlans.length) {
+      throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Meals plan not found");
+    }
+
+    const existingPlan = existingPlans[0];
+
+    await client.query(
+      `DELETE FROM meals_plan_items WHERE meals_plan_id = $1`,
+      [existingPlan.id]
+    );
+
+    for (const mealId of mealsIds) {
+      await client.query(
+        `INSERT INTO meals_plan_items (meals_plan_id, meal_id) VALUES ($1, $2)`,
+        [existingPlan.id, mealId]
+      );
+    }
+  });
 
   return getMealsPlanByUserIdAndDateService(userId, date);
 };
