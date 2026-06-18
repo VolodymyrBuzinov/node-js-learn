@@ -1,49 +1,53 @@
-import path from "path";
-import { getMealByIdService, getMealsService } from "../meals/mealsService.js";
+import { getMealByIdService } from "../meals/mealsService.js";
 import { Meal } from "../meals/mealsTypes.js";
-import fs from "fs/promises";
-
-const mealsPath = path.join(process.cwd(), "src", "config", "db", "meals.json");
+import { pool } from "@/config/db/pool.js";
 
 export const createMealAsAdminService = async (
   meal: Omit<Meal, "id">
 ): Promise<Meal> => {
-  const meals = await getMealsService();
-  const newMeal: Meal = {
-    id: meals.length + 1,
-    ...meal,
-  };
-  meals.push(newMeal);
-  await fs.writeFile(mealsPath, JSON.stringify(meals, null, 2));
-  return newMeal;
+  const { rows: meals } = await pool.query(
+    `
+    INSERT INTO meals (name, description, image_url, type, composition)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id, name, description, image_url AS "imageUrl", type, composition
+    `,
+    [meal.name, meal.description, meal.imageUrl, meal.type, meal.composition]
+  );
+  return meals[0] as Meal;
 };
 
 export const updateMealAsAdminService = async (
   mealId: number,
   updatedFields: Partial<Omit<Meal, "id">>
 ): Promise<Meal> => {
-  const meals = await getMealsService();
-  const meal = await getMealByIdService(mealId);
-
-  const updatedMeal: Meal = {
-    ...meal,
-    ...updatedFields,
-    composition: updatedFields.composition
-      ? { ...meal.composition, ...updatedFields.composition }
-      : meal.composition,
-  };
-
-  const updatedMeals = meals.map((meal) =>
-    meal.id === mealId ? updatedMeal : meal
+  const existing = await getMealByIdService(mealId);
+  const { rows: meals } = await pool.query(
+    `
+    UPDATE meals
+    SET name = $1, description = $2, image_url = $3, type = $4, composition = $5
+    WHERE id = $6
+    RETURNING id, name, description, image_url AS "imageUrl", type, composition
+    `,
+    [
+      updatedFields.name ?? existing.name,
+      updatedFields.description ?? existing.description,
+      updatedFields.imageUrl ?? existing.imageUrl,
+      updatedFields.type ?? existing.type,
+      updatedFields.composition ?? existing.composition,
+      mealId,
+    ]
   );
-  await fs.writeFile(mealsPath, JSON.stringify(updatedMeals, null, 2));
-  return updatedMeal;
+  return meals[0] as Meal;
 };
 
 export const deleteMealAsAdminService = async (mealId: number) => {
-  const meals = await getMealsService();
   await getMealByIdService(mealId);
-  const filteredMeals = meals.filter((meal) => meal.id !== mealId);
-  await fs.writeFile(mealsPath, JSON.stringify(filteredMeals, null, 2));
-  return filteredMeals;
+  await pool.query(
+    `
+    DELETE FROM meals
+    WHERE id = $1
+    `,
+    [mealId]
+  );
+  return mealId;
 };
