@@ -4,7 +4,7 @@
     "name": "Овсянка з ягодами",
     "description": "Класичний сніданок з вівсяних пластівців, свіжих ягід та меду",
     "imageUrl": "https://images.unsplash.com/photo-1517673400265-9b023e70a935?w=400",
-    "type": "breakfast",
+    "type": "сніданок",
     "composition": {
       "calories": 320,
       "protein": 10,
@@ -80,7 +80,7 @@
     "name": "Борщ український",
     "description": "Традиційний борщ зі свинини, буряка, капусти та сметани",
     "imageUrl": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400",
-    "type": "lunch",
+    "type": "обід",
     "composition": {
       "calories": 450,
       "protein": 22,
@@ -125,7 +125,7 @@
     "name": "Курячий бульйон",
     "description": "Легкий домашній бульйон з курки, локшини та зеленою цибулею",
     "imageUrl": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400",
-    "type": "lunch",
+    "type": "обід",
     "composition": {
       "calories": 210,
       "protein": 16,
@@ -165,7 +165,7 @@
     "name": "Вареники з картоплею",
     "description": "Домашні вареники з начинкою з картоплі та цибулі, подані зі сметаною",
     "imageUrl": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400",
-    "type": "lunch",
+    "type": "обід",
     "composition": {
       "calories": 380,
       "protein": 12,
@@ -205,7 +205,7 @@
     "name": "Гречка з куркою",
     "description": "Гречана каша з тушкованою курячою грудкою та овочами",
     "imageUrl": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400",
-    "type": "dinner",
+    "type": "вечеря",
     "composition": {
       "calories": 420,
       "protein": 32,
@@ -245,7 +245,7 @@
     "name": "Салат Цезар",
     "description": "Салат з romaine, курячим філе, пармезаном та соусом Цезар",
     "imageUrl": "https://images.unsplash.com/photo-1550304943-4f24f11d0f8a?w=400",
-    "type": "lunch",
+    "type": "обід",
     "composition": {
       "calories": 350,
       "protein": 28,
@@ -285,7 +285,7 @@
     "name": "Запечена риба з овочами",
     "description": "Філе лосося, запечене з броколі, кабачком та лимоном",
     "imageUrl": "https://images.unsplash.com/photo-1467003909585-2f8a2b744874?w=400",
-    "type": "dinner",
+    "type": "вечеря",
     "composition": {
       "calories": 390,
       "protein": 34,
@@ -325,7 +325,7 @@
     "name": "Грецький йогурт з горіхами",
     "description": "Перекус із натурального йогурту, волоських горіхів та меду",
     "imageUrl": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400",
-    "type": "breakfast",
+    "type": "сніданок",
     "composition": {
       "calories": 220,
       "protein": 14,
@@ -355,7 +355,7 @@
     "name": "Смузі з бананом",
     "description": "Енергетичний смузі з банана, шпинату, молока та арахісової пасти",
     "imageUrl": "https://images.unsplash.com/photo-1505252587541-329847f25821?w=400",
-    "type": "breakfast",
+    "type": "сніданок",
     "composition": {
       "calories": 290,
       "protein": 10,

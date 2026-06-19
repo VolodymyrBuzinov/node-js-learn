@@ -5,6 +5,44 @@ import { User } from "../user/userTypes.js";
 import { AppError } from "@/services/appError.js";
 import { pool } from "@/config/db/pool.js";
 
+export interface AdminUsersFilters {
+  sortBy?: string;
+  sortOrder?: "ASC" | "DESC";
+  email?: string;
+}
+
+export const getAdminUsersWithFiltersService = async ({
+  sortBy,
+  sortOrder = "ASC",
+  email,
+}: AdminUsersFilters) => {
+  const conditions: string[] = [];
+  const values: string[] = [];
+
+  if (email) {
+    values.push(`%${email}%`);
+    conditions.push(`email ILIKE $${values.length}`);
+  }
+
+  const whereClause = conditions.length
+    ? `WHERE ${conditions.join(" AND ")}`
+    : "";
+
+  const orderClause =
+    sortBy === "name" ? `ORDER BY name ${sortOrder}, id ${sortOrder}` : "";
+
+  const { rows } = await pool.query(
+    `SELECT id, name, email, created_at AS "createdAt", updated_at AS "updatedAt",
+     age, weight, gender, height, activity_level AS "activityLevel" FROM users
+    ${whereClause}
+    ${orderClause}
+    `,
+    values
+  );
+
+  return rows as User[];
+};
+
 export const createUserAsAdminService = async (
   name: string,
   email: string,

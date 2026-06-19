@@ -9,13 +9,18 @@ import {
 } from "./adminUsersControllers.js";
 import {
   createUserAsAdminValidator,
+  getUsersAsAdminValidator,
   updateUserAsAdminValidator,
 } from "./adminUsersValidators.js";
 import { validateSchema } from "@/utils/validation.js";
 
 export const adminUsersRoutes = express.Router();
 
-adminUsersRoutes.get("/", asyncHandler(getUsersAsAdmin));
+adminUsersRoutes.get(
+  "/",
+  validateSchema(getUsersAsAdminValidator),
+  asyncHandler(getUsersAsAdmin)
+);
 
 adminUsersRoutes.get("/:userId", asyncHandler(getUserByIdAsAdmin));
 

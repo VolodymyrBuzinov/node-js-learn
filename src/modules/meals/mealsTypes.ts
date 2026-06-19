@@ -1,4 +1,4 @@
-export type MealType = "breakfast" | "lunch" | "dinner";
+export type MealType = "сніданок" | "обід" | "вечеря";
 
 export type MealProduct = {
   name: string;
@@ -21,4 +21,4 @@ export type Meal = {
   };
 };
 
-export const MEAL_TYPE_VALUES = ["breakfast", "lunch", "dinner"] as const;
+export const MEAL_TYPE_VALUES = ["сніданок", "обід", "вечеря"] as const;

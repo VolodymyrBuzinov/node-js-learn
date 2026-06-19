@@ -1,6 +1,12 @@
 import z from "zod";
 import { ACTIVITY_LEVEL_VALUES, GENDER_VALUES } from "../user/userTypes.js";
 
+export const getUsersAsAdminValidator = z.object({
+  sortBy: z.enum(["name"]).optional(),
+  sortOrder: z.enum(["ASC", "DESC"]).optional(),
+  email: z.string().optional(),
+});
+
 export const updateUserAsAdminValidator = z.object({
   name: z.string().optional(),
   password: z.string().optional(),
