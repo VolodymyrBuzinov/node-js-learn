@@ -2,11 +2,8 @@ import { format } from "date-fns";
 import { getUserByIdService, getUsersData } from "../user/userService.js";
 import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
 import { User } from "../user/userTypes.js";
-import fs from "fs/promises";
 import { AppError } from "@/services/appError.js";
-import path from "path";
-
-const usersPath = path.join(process.cwd(), "src", "config", "db", "users.json");
+import { pool } from "@/config/db/pool.js";
 
 export const createUserAsAdminService = async (
   name: string,
@@ -31,8 +28,21 @@ export const createUserAsAdminService = async (
     height: 0,
     activityLevel: "",
   };
-  users.push(newUser);
-  await fs.writeFile(usersPath, JSON.stringify(users, null, 2));
+  await pool.query(
+    "INSERT INTO users (name, email, password, created_at, updated_at, age, weight, gender, height, activity_level) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+    [
+      newUser.name,
+      newUser.email,
+      newUser.password,
+      newUser.createdAt,
+      newUser.updatedAt,
+      newUser.age,
+      newUser.weight,
+      newUser.gender,
+      newUser.height,
+      newUser.activityLevel,
+    ]
+  );
   return newUser;
 };
 
@@ -40,24 +50,26 @@ export const updateUserAsAdminService = async (
   userId: number,
   newUser: Partial<User>
 ) => {
-  const users = await getUsersData();
-  const user = await getUserByIdService(userId);
-
-  const updatedUser = {
-    ...user,
-    ...newUser,
-  };
-  const updatedUsers = users.map((user) =>
-    user.id === userId ? updatedUser : user
+  const existing = await getUserByIdService(userId);
+  const { rows } = await pool.query(
+    "UPDATE users SET name = $1, email = $2, password = $3, age = $4, weight = $5, gender = $6, height = $7, activity_level = $8 WHERE id = $9",
+    [
+      newUser.name ?? existing.name,
+      newUser.email ?? existing.email,
+      newUser.password ?? existing.password,
+      newUser.age ?? existing.age,
+      newUser.weight ?? existing.weight,
+      newUser.gender ?? existing.gender,
+      newUser.height ?? existing.height,
+      newUser.activityLevel ?? existing.activityLevel,
+      userId,
+    ]
   );
-  await fs.writeFile(usersPath, JSON.stringify(updatedUsers, null, 2));
-  return updatedUser;
+  return rows[0] as User;
 };
 
 export const deleteUserAsAdminService = async (userId: number) => {
-  const users = await getUsersData();
   await getUserByIdService(userId);
-  const filteredUsers = users.filter((user) => user.id !== userId);
-  await fs.writeFile(usersPath, JSON.stringify(filteredUsers, null, 2));
-  return filteredUsers;
+  await pool.query("DELETE FROM users WHERE id = $1", [userId]);
+  return userId;
 };
