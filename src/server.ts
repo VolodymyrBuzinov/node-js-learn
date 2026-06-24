@@ -7,10 +7,12 @@ import { dashboardRoutes } from "@/modules/dashboard/dashboardRoutes.js";
 import { adminRoutes } from "./modules/admin/adminRoutes.js";
 import { adminUsersRoutes } from "./modules/admin-users/adminUsersRoutes.js";
 import { adminMealsRoutes } from "./modules/admin-meals/adminMealsRoutes.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/users", userRoutes);
 app.use("/meals", mealsRoutes);
