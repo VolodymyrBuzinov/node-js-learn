@@ -1,18 +1,16 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { Request, Response } from "express";
-import {
-  getAdminByIdService,
-  getAdminService,
-} from "../admin/adminServices.js";
+import { loginAdminService, logoutAdminService } from "./adminAuthServices.js";
 
 export const loginAdmin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const admin = await getAdminService(email, password);
-  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: { admin } });
+  const data = await loginAdminService(email, password);
+  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data });
 };
 
-export const logoutAdmin = async (req: Request, res: Response) => {
-  const { adminId } = req.body;
-  await getAdminByIdService(adminId);
-  return res.status(HTTP_STATUS_CODES.NO_CONTENT).json({});
+export const logoutAdmin = async (_req: Request, res: Response) => {
+  await logoutAdminService();
+  return res
+    .status(HTTP_STATUS_CODES.NO_CONTENT)
+    .json({ message: "Logout successful" });
 };
