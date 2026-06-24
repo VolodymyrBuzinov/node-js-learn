@@ -8,6 +8,7 @@ import { adminRoutes } from "./modules/admin/adminRoutes.js";
 import { adminUsersRoutes } from "./modules/admin-users/adminUsersRoutes.js";
 import { adminMealsRoutes } from "./modules/admin-meals/adminMealsRoutes.js";
 import cookieParser from "cookie-parser";
+import { adminAuthRoutes } from "./modules/admin-auth/adminAuthRoutes.js";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/users", userRoutes);
 app.use("/meals", mealsRoutes);
 app.use("/meals-plan", mealsPlanRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/admin/auth", adminAuthRoutes);
 app.use("/admin", adminRoutes);
 app.use("/admin/users", adminUsersRoutes);
 app.use("/admin/meals", adminMealsRoutes);
