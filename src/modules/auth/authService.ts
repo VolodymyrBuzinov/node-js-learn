@@ -1,27 +1,33 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
+import { userClient } from "@/config/supabase.js";
 import { getUsersData } from "@/modules/user/userService.js";
 import { AppError } from "@/services/appError.js";
 
 export const loginUserService = async (email: string, password: string) => {
-  const users = await getUsersData();
-
-  const user = users.find((user) => user.email === email);
-
-  if (!user) {
-    throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "Invalid credentials");
+  const { data, error } = await userClient.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (error) {
+    throw new AppError(
+      error.status ?? HTTP_STATUS_CODES.UNAUTHORIZED,
+      error.message ?? "Something went wrong"
+    );
   }
-  if (user.password !== password) {
-    throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "Invalid password");
-  }
-
-  return user;
+  return {
+    user: data.user,
+    accessToken: data.session?.access_token,
+    refreshToken: data.session?.refresh_token,
+    expiresIn: data.session?.expires_at,
+  };
 };
 
-export const logoutUserService = async (userId: number) => {
-  const users = await getUsersData();
-  const user = users.find((user) => user.id === userId);
-  if (!user) {
-    throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "User not found");
+export const logoutUserService = async () => {
+  const { error } = await userClient.auth.signOut();
+  if (error) {
+    throw new AppError(
+      error.status ?? HTTP_STATUS_CODES.UNAUTHORIZED,
+      error.message ?? "Something went wrong"
+    );
   }
-  return user;
 };
