@@ -1,9 +1,9 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
-import { adminClient } from "@/config/supabase.js";
+import { adminClient, userClient } from "@/config/supabase.js";
 import { AppError } from "@/services/appError.js";
 
 export const loginAdminService = async (email: string, password: string) => {
-  const { data, error } = await adminClient.auth.signInWithPassword({
+  const { data, error } = await userClient.auth.signInWithPassword({
     email,
     password,
   });
@@ -20,7 +20,7 @@ export const loginAdminService = async (email: string, password: string) => {
   }
 
   return {
-    user: {
+    admin: {
       email: profile?.email,
       name: profile?.name,
       role: profile?.role,
@@ -32,7 +32,7 @@ export const loginAdminService = async (email: string, password: string) => {
 };
 
 export const logoutAdminService = async () => {
-  const { error } = await adminClient.auth.signOut();
+  const { error } = await userClient.auth.signOut();
   if (error) {
     throw new AppError(
       HTTP_STATUS_CODES.UNAUTHORIZED,
