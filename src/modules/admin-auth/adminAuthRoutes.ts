@@ -3,6 +3,7 @@ import express from "express";
 import { loginAdmin, logoutAdmin } from "./adminAuthControllers.js";
 import { validateSchema } from "@/utils/validation.js";
 import { loginAuthValidator } from "../auth/authValidators.js";
+import { adminAuthMiddleware } from "@/middlewares/authMiddlewares.js";
 
 export const adminAuthRoutes = express.Router();
 
@@ -12,4 +13,4 @@ adminAuthRoutes.post(
   asyncHandler(loginAdmin)
 );
 
-adminAuthRoutes.patch("/logout", asyncHandler(logoutAdmin));
+adminAuthRoutes.post("/logout", adminAuthMiddleware, asyncHandler(logoutAdmin));

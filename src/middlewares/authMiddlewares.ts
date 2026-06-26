@@ -34,18 +34,6 @@ const getProfile = async (userId: string, isAdmin: boolean) => {
   return profile;
 };
 
-const getUserData = async (userId: string) => {
-  const { data, error } = await userClient
-    .from("users")
-    .select("*")
-    .eq("id", userId)
-    .single();
-  if (error) {
-    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, error?.message);
-  }
-  return data;
-};
-
 export const adminAuthMiddleware = async (
   req: Request,
   res: Response,
@@ -53,8 +41,7 @@ export const adminAuthMiddleware = async (
 ) => {
   const token = await getToken(req);
   const userId = await getUser(token);
-  const profile = await getProfile(userId, true);
-  res.locals.admin = profile;
+  res.locals.auth = { userId, role: "admin" };
   next();
 };
 
@@ -66,7 +53,6 @@ export const userAuthMiddleware = async (
   const token = await getToken(req);
   const userId = await getUser(token);
   await getProfile(userId, false);
-  const userData = await getUserData(userId);
-  res.locals.user = userData;
+  res.locals.auth = { userId, role: "user" };
   next();
 };
