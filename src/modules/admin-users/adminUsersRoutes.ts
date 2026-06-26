@@ -13,27 +13,39 @@ import {
   updateUserAsAdminValidator,
 } from "./adminUsersValidators.js";
 import { validateSchema } from "@/utils/validation.js";
+import { adminAuthMiddleware } from "@/middlewares/authMiddlewares.js";
 
 export const adminUsersRoutes = express.Router();
 
 adminUsersRoutes.get(
   "/",
+  adminAuthMiddleware,
   validateSchema(getUsersAsAdminValidator),
   asyncHandler(getUsersAsAdmin)
 );
 
-adminUsersRoutes.get("/:userId", asyncHandler(getUserByIdAsAdmin));
+adminUsersRoutes.get(
+  "/:userId",
+  adminAuthMiddleware,
+  asyncHandler(getUserByIdAsAdmin)
+);
 
 adminUsersRoutes.post(
   "/",
+  adminAuthMiddleware,
   validateSchema(createUserAsAdminValidator),
   asyncHandler(createUserAsAdmin)
 );
 
 adminUsersRoutes.patch(
   "/:userId",
+  adminAuthMiddleware,
   validateSchema(updateUserAsAdminValidator),
   asyncHandler(updateUserAsAdmin)
 );
 
-adminUsersRoutes.delete("/:userId", asyncHandler(deleteUserAsAdmin));
+adminUsersRoutes.delete(
+  "/:userId",
+  adminAuthMiddleware,
+  asyncHandler(deleteUserAsAdmin)
+);
