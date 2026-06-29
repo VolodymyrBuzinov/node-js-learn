@@ -6,7 +6,11 @@ import { NextFunction, Request, Response } from "express";
 const getToken = (req: Request) => {
   const token = req.cookies?.accessToken;
   if (!token) {
-    throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "Unauthorized");
+    throw new AppError(
+      HTTP_STATUS_CODES.UNAUTHORIZED,
+      "Unauthorized",
+      "access_token_not_found"
+    );
   }
   return token;
 };
@@ -14,7 +18,11 @@ const getToken = (req: Request) => {
 const getUser = async (token: string) => {
   const { data, error } = await userClient.auth.getUser(token);
   if (error || !data?.user?.id) {
-    throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "Unauthorized");
+    throw new AppError(
+      HTTP_STATUS_CODES.UNAUTHORIZED,
+      "Unauthorized",
+      error?.code
+    );
   }
   return data.user.id;
 };
@@ -29,7 +37,11 @@ const getProfile = async (userId: string, isAdmin: boolean) => {
     .eq("id", userId)
     .single();
   if (profileError) {
-    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, profileError?.message);
+    throw new AppError(
+      HTTP_STATUS_CODES.BAD_REQUEST,
+      profileError?.message,
+      profileError?.code
+    );
   }
   return profile;
 };

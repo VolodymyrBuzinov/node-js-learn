@@ -8,7 +8,11 @@ export const loginAdminService = async (email: string, password: string) => {
     password,
   });
   if (error) {
-    throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, error?.message);
+    throw new AppError(
+      HTTP_STATUS_CODES.UNAUTHORIZED,
+      error?.message,
+      error?.code
+    );
   }
   const { data: profile, error: profileError } = await adminClient
     .from("profiles")
@@ -16,7 +20,11 @@ export const loginAdminService = async (email: string, password: string) => {
     .eq("id", data.user?.id)
     .single();
   if (profileError) {
-    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, profileError?.message);
+    throw new AppError(
+      HTTP_STATUS_CODES.BAD_REQUEST,
+      profileError?.message,
+      profileError?.code
+    );
   }
 
   return {
@@ -36,7 +44,26 @@ export const logoutAdminService = async () => {
   if (error) {
     throw new AppError(
       HTTP_STATUS_CODES.UNAUTHORIZED,
-      error?.message ?? "Something went wrong"
+      error?.message ?? "Something went wrong",
+      error?.code
     );
   }
+};
+
+export const refreshTokenAdminService = async (refreshToken: string) => {
+  const { data, error } = await userClient.auth.refreshSession({
+    refresh_token: refreshToken,
+  });
+  if (error) {
+    throw new AppError(
+      HTTP_STATUS_CODES.UNAUTHORIZED,
+      error?.message,
+      error?.code
+    );
+  }
+  return {
+    accessToken: data.session?.access_token,
+    refreshToken: data.session?.refresh_token,
+    expiresIn: data.session?.expires_at,
+  };
 };

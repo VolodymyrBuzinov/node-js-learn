@@ -1,6 +1,10 @@
 import { asyncHandler } from "@/utils/asyncHandler.js";
 import express from "express";
-import { loginAdmin, logoutAdmin } from "./adminAuthControllers.js";
+import {
+  loginAdmin,
+  logoutAdmin,
+  refreshTokenAdmin,
+} from "./adminAuthControllers.js";
 import { validateSchema } from "@/utils/validation.js";
 import { loginAuthValidator } from "../auth/authValidators.js";
 import { adminAuthMiddleware } from "@/middlewares/authMiddlewares.js";
@@ -14,3 +18,5 @@ adminAuthRoutes.post(
 );
 
 adminAuthRoutes.post("/logout", adminAuthMiddleware, asyncHandler(logoutAdmin));
+
+adminAuthRoutes.post("/refresh-token", asyncHandler(refreshTokenAdmin));

@@ -2,7 +2,7 @@ import { asyncHandler } from "@/utils/asyncHandler.js";
 import { validateSchema } from "@/utils/validation.js";
 import express from "express";
 import { loginAuthValidator, validateAuthId } from "./authValidators.js";
-import { loginUser, logoutUser } from "./authControllers.js";
+import { loginUser, logoutUser, refreshToken } from "./authControllers.js";
 
 export const userRoutes = express.Router();
 
@@ -16,3 +16,5 @@ userRoutes.post(
   validateSchema(validateAuthId),
   asyncHandler(logoutUser)
 );
+
+userRoutes.post("/refresh-token", asyncHandler(refreshToken));

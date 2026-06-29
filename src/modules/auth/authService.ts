@@ -1,6 +1,5 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { userClient } from "@/config/supabase.js";
-import { getUsersData } from "@/modules/user/userService.js";
 import { AppError } from "@/services/appError.js";
 
 export const loginUserService = async (email: string, password: string) => {
@@ -30,4 +29,22 @@ export const logoutUserService = async () => {
       error.message ?? "Something went wrong"
     );
   }
+};
+
+export const refreshTokenService = async (refreshToken: string) => {
+  const { data, error } = await userClient.auth.refreshSession({
+    refresh_token: refreshToken,
+  });
+  if (error) {
+    throw new AppError(
+      HTTP_STATUS_CODES.UNAUTHORIZED,
+      error?.message,
+      error?.code
+    );
+  }
+  return {
+    accessToken: data.session?.access_token,
+    refreshToken: data.session?.refresh_token,
+    expiresIn: data.session?.expires_at,
+  };
 };
