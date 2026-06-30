@@ -1,9 +1,10 @@
 import { format } from "date-fns";
-import { getUserByIdService, getUsersData } from "../user/userService.js";
+import { getUserByIdService } from "../user/userService.js";
 import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
 import { User } from "../user/userTypes.js";
 import { AppError } from "@/services/appError.js";
 import { pool } from "@/config/db/pool.js";
+import { adminClient } from "@/config/supabase.js";
 
 export interface AdminUsersFilters {
   sortBy?: string;
@@ -48,40 +49,58 @@ export const createUserAsAdminService = async (
   email: string,
   password: string
 ) => {
-  const users = await getUsersData();
-  const isUserExists = users.some((user) => user.email === email);
-  if (isUserExists) {
+  const { rows: existing } = await pool.query(
+    "SELECT 1 FROM users WHERE email = $1",
+    [email]
+  );
+  if (existing.length) {
     throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "User already exists");
   }
-  const newUser: User = {
-    id: users.length + 1,
-    name,
-    email,
-    password,
-    createdAt: format(new Date(), DATE_FORMAT),
-    updatedAt: null,
-    age: 0,
-    weight: 0,
-    gender: "",
-    height: 0,
-    activityLevel: "",
-  };
-  await pool.query(
-    "INSERT INTO users (name, email, password, created_at, updated_at, age, weight, gender, height, activity_level) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
-    [
-      newUser.name,
-      newUser.email,
-      newUser.password,
-      newUser.createdAt,
-      newUser.updatedAt,
-      newUser.age,
-      newUser.weight,
-      newUser.gender,
-      newUser.height,
-      newUser.activityLevel,
-    ]
+
+  const { data: authData, error: authError } =
+    await adminClient.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { name },
+    });
+
+  if (authError || !authData.user) {
+    throw new AppError(
+      HTTP_STATUS_CODES.BAD_REQUEST,
+      authError?.message ?? "Failed to create user",
+      authError?.code
+    );
+  }
+
+  const userId = authData.user.id;
+  const createdAt = format(new Date(), DATE_FORMAT);
+
+  try {
+    await pool.query(
+      `INSERT INTO profiles (id, email, name, role, created_at)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [userId, email, name, "user", createdAt]
+    );
+
+    await pool.query(
+      `INSERT INTO users (id, name, email, created_at, age, weight, gender, height, activity_level)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [userId, name, email, createdAt, 0, 0, "", 0, ""]
+    );
+  } catch (error) {
+    await adminClient.auth.admin.deleteUser(userId);
+    throw error;
+  }
+
+  const { rows } = await pool.query(
+    `SELECT id, name, email, created_at AS "createdAt", updated_at AS "updatedAt",
+     age, weight, gender, height, activity_level AS "activityLevel"
+     FROM users WHERE id = $1`,
+    [userId]
   );
-  return newUser;
+
+  return { ...rows[0] } as User;
 };
 
 export const updateUserAsAdminService = async (
