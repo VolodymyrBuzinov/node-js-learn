@@ -5,9 +5,9 @@ import {
   createUserAsAdminService,
   deleteUserAsAdminService,
   getAdminUsersWithFiltersService,
+  getUserByIdService,
   updateUserAsAdminService,
 } from "./adminUsersServices.js";
-import { getUserByIdService } from "../user/userService.js";
 
 export const getUsersAsAdmin = async (req: Request, res: Response) => {
   const { sortBy, sortOrder, email } = req.query;
@@ -23,7 +23,7 @@ export const getUsersAsAdmin = async (req: Request, res: Response) => {
 
 export const getUserByIdAsAdmin = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const user = await getUserByIdService(Number(userId));
+  const user = await getUserByIdService(userId as unknown as string);
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: user });
 };
 
@@ -37,7 +37,7 @@ export const updateUserAsAdmin = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const { name, email, password, age, weight, gender, height, activityLevel } =
     req.body;
-  const user = await updateUserAsAdminService(Number(userId), {
+  const user = await updateUserAsAdminService(userId as unknown as string, {
     name,
     email,
     password,
@@ -52,6 +52,6 @@ export const updateUserAsAdmin = async (req: Request, res: Response) => {
 
 export const deleteUserAsAdmin = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  await deleteUserAsAdminService(Number(userId));
+  await deleteUserAsAdminService(userId as unknown as string);
   return res.status(HTTP_STATUS_CODES.NO_CONTENT).json({});
 };

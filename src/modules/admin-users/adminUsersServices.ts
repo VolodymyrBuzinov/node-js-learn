@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { getUserByIdService } from "../user/userService.js";
 import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
 import { User } from "../user/userTypes.js";
 import { AppError } from "@/services/appError.js";
@@ -42,6 +41,15 @@ export const getAdminUsersWithFiltersService = async ({
   );
 
   return rows as User[];
+};
+
+export const getUserByIdService = async (userId: string) => {
+  const { rows } = await pool.query(
+    `SELECT id, name, email, created_at AS "createdAt", updated_at AS "updatedAt",
+     age, weight, gender, height, activity_level AS "activityLevel" FROM users WHERE id = $1`,
+    [userId]
+  );
+  return rows[0] as User;
 };
 
 export const createUserAsAdminService = async (
@@ -104,7 +112,7 @@ export const createUserAsAdminService = async (
 };
 
 export const updateUserAsAdminService = async (
-  userId: number,
+  userId: string,
   newUser: Partial<User>
 ) => {
   const existing = await getUserByIdService(userId);
@@ -125,7 +133,7 @@ export const updateUserAsAdminService = async (
   return rows[0] as User;
 };
 
-export const deleteUserAsAdminService = async (userId: number) => {
+export const deleteUserAsAdminService = async (userId: string) => {
   await getUserByIdService(userId);
   await pool.query("DELETE FROM users WHERE id = $1", [userId]);
   return userId;
