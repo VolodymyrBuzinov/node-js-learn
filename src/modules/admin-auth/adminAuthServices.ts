@@ -1,6 +1,7 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
-import { adminClient, userClient } from "@/config/supabase.js";
+import { userClient } from "@/config/supabase.js";
 import { AppError } from "@/services/appError.js";
+import { pool } from "@/config/db/pool.js";
 
 export const loginAdminService = async (email: string, password: string) => {
   const { data, error } = await userClient.auth.signInWithPassword({
@@ -14,24 +15,20 @@ export const loginAdminService = async (email: string, password: string) => {
       error?.code
     );
   }
-  const { data: profile, error: profileError } = await adminClient
-    .from("profiles")
-    .select("*")
-    .eq("id", data.user?.id)
-    .single();
-  if (profileError) {
-    throw new AppError(
-      HTTP_STATUS_CODES.BAD_REQUEST,
-      profileError?.message,
-      profileError?.code
-    );
+  const { rows } = await pool.query(
+    `SELECT id, email, name, role FROM profiles WHERE id = $1`,
+    [data.user?.id]
+  );
+  const profile = rows[0];
+  if (!profile) {
+    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "Profile not found");
   }
 
   return {
     admin: {
-      email: profile?.email,
-      name: profile?.name,
-      role: profile?.role,
+      email: profile.email,
+      name: profile.name,
+      role: profile.role,
     },
     accessToken: data.session?.access_token,
     refreshToken: data.session?.refresh_token,

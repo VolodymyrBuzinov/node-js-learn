@@ -1,7 +1,8 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
-import { adminClient, userClient } from "@/config/supabase.js";
+import { userClient } from "@/config/supabase.js";
 import { AppError } from "@/services/appError.js";
 import { NextFunction, Request, Response } from "express";
+import { pool } from "@/config/db/pool.js";
 
 const getToken = (req: Request) => {
   const token = req.cookies?.accessToken;
@@ -27,23 +28,15 @@ const getUser = async (token: string) => {
   return data.user.id;
 };
 
-const getProfile = async (userId: string, isAdmin: boolean) => {
-  const { data: profile, error: profileError } = await (isAdmin
-    ? adminClient
-    : userClient
-  )
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
-  if (profileError) {
-    throw new AppError(
-      HTTP_STATUS_CODES.BAD_REQUEST,
-      profileError?.message,
-      profileError?.code
-    );
+const getProfile = async (userId: string) => {
+  const { rows } = await pool.query(
+    `SELECT id, email, name, role FROM profiles WHERE id = $1`,
+    [userId]
+  );
+  if (!rows[0]) {
+    throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "Unauthorized");
   }
-  return profile;
+  return rows[0];
 };
 
 export const adminAuthMiddleware = async (
@@ -64,7 +57,7 @@ export const userAuthMiddleware = async (
 ) => {
   const token = await getToken(req);
   const userId = await getUser(token);
-  await getProfile(userId, false);
+  await getProfile(userId);
   res.locals.auth = { userId, role: "user" };
   next();
 };
