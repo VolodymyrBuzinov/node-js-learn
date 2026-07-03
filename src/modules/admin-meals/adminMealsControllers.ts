@@ -14,7 +14,7 @@ export const getMealsAsAdmin = async (_req: Request, res: Response) => {
 
 export const getMealByIdAsAdmin = async (req: Request, res: Response) => {
   const { mealId } = req.params;
-  const meal = await getMealByIdService(Number(mealId));
+  const meal = await getMealByIdService(mealId as unknown as string);
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: { meal } });
 };
 
@@ -33,7 +33,7 @@ export const createMealAsAdmin = async (req: Request, res: Response) => {
 export const updateMealAsAdmin = async (req: Request, res: Response) => {
   const { mealId } = req.params;
   const { name, description, imageUrl, type, composition } = req.body;
-  const meal = await updateMealAsAdminService(Number(mealId), {
+  const meal = await updateMealAsAdminService(mealId as unknown as string, {
     name,
     description,
     imageUrl,
@@ -45,6 +45,6 @@ export const updateMealAsAdmin = async (req: Request, res: Response) => {
 
 export const deleteMealAsAdmin = async (req: Request, res: Response) => {
   const { mealId } = req.params;
-  await deleteMealAsAdminService(Number(mealId));
+  await deleteMealAsAdminService(mealId as unknown as string);
   return res.status(HTTP_STATUS_CODES.NO_CONTENT).json({});
 };

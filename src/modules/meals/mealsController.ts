@@ -9,6 +9,6 @@ export const getMeals = async (_req: Request, res: Response) => {
 
 export const getMealById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const meal = await getMealByIdService(Number(id));
+  const meal = await getMealByIdService(id as unknown as string);
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: meal });
 };

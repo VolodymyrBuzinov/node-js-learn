@@ -113,6 +113,7 @@ export const createUserAsAdminService = async (
 
 export const deleteUserAsAdminService = async (userId: string) => {
   await getUserByIdService(userId);
+  await adminClient.auth.admin.deleteUser(userId);
   await pool.query("DELETE FROM users WHERE id = $1", [userId]);
   return userId;
 };

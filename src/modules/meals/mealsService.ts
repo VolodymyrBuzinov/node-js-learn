@@ -11,7 +11,7 @@ export const getMealsService = async () => {
   return rows as Meal[];
 };
 
-export const getMealByIdService = async (id: number) => {
+export const getMealByIdService = async (id: string) => {
   const { rows } = await pool.query(
     `
     SELECT id, name, description, image_url AS "imageUrl", type, composition

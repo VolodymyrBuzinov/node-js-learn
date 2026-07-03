@@ -17,10 +17,14 @@ export const createMealAsAdminService = async (
 };
 
 export const updateMealAsAdminService = async (
-  mealId: number,
+  mealId: string,
   updatedFields: Partial<Omit<Meal, "id">>
 ): Promise<Meal> => {
   const existing = await getMealByIdService(mealId);
+  const composition = {
+    ...JSON.parse(JSON.stringify(existing.composition ?? {})),
+    ...(updatedFields.composition ?? {}),
+  };
   const { rows: meals } = await pool.query(
     `
     UPDATE meals
@@ -33,14 +37,14 @@ export const updateMealAsAdminService = async (
       updatedFields.description ?? existing.description,
       updatedFields.imageUrl ?? existing.imageUrl,
       updatedFields.type ?? existing.type,
-      updatedFields.composition ?? existing.composition,
+      composition,
       mealId,
     ]
   );
   return meals[0] as Meal;
 };
 
-export const deleteMealAsAdminService = async (mealId: number) => {
+export const deleteMealAsAdminService = async (mealId: string) => {
   await getMealByIdService(mealId);
   await pool.query(
     `
