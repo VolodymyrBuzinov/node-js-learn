@@ -5,12 +5,10 @@ import {
   deleteUserAsAdmin,
   getUserByIdAsAdmin,
   getUsersAsAdmin,
-  updateUserAsAdmin,
 } from "./adminUsersControllers.js";
 import {
   createUserAsAdminValidator,
   getUsersAsAdminValidator,
-  updateUserAsAdminValidator,
 } from "./adminUsersValidators.js";
 import { validateSchema } from "@/utils/validation.js";
 import { adminAuthMiddleware } from "@/middlewares/authMiddlewares.js";
@@ -35,13 +33,6 @@ adminUsersRoutes.post(
   adminAuthMiddleware,
   validateSchema(createUserAsAdminValidator),
   asyncHandler(createUserAsAdmin)
-);
-
-adminUsersRoutes.patch(
-  "/:userId",
-  adminAuthMiddleware,
-  validateSchema(updateUserAsAdminValidator),
-  asyncHandler(updateUserAsAdmin)
 );
 
 adminUsersRoutes.delete(

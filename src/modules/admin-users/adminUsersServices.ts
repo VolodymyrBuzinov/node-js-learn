@@ -111,28 +111,6 @@ export const createUserAsAdminService = async (
   return { ...rows[0] } as User;
 };
 
-export const updateUserAsAdminService = async (
-  userId: string,
-  newUser: Partial<User>
-) => {
-  const existing = await getUserByIdService(userId);
-  const { rows } = await pool.query(
-    "UPDATE users SET name = $1, email = $2, password = $3, age = $4, weight = $5, gender = $6, height = $7, activity_level = $8 WHERE id = $9",
-    [
-      newUser.name ?? existing.name,
-      newUser.email ?? existing.email,
-      newUser.password ?? existing.password,
-      newUser.age ?? existing.age,
-      newUser.weight ?? existing.weight,
-      newUser.gender ?? existing.gender,
-      newUser.height ?? existing.height,
-      newUser.activityLevel ?? existing.activityLevel,
-      userId,
-    ]
-  );
-  return rows[0] as User;
-};
-
 export const deleteUserAsAdminService = async (userId: string) => {
   await getUserByIdService(userId);
   await pool.query("DELETE FROM users WHERE id = $1", [userId]);
