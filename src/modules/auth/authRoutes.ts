@@ -4,17 +4,17 @@ import express from "express";
 import { loginAuthValidator, validateAuthId } from "./authValidators.js";
 import { loginUser, logoutUser, refreshToken } from "./authControllers.js";
 
-export const userRoutes = express.Router();
+export const userAuthRoutes = express.Router();
 
-userRoutes.post(
+userAuthRoutes.post(
   "/login",
   validateSchema(loginAuthValidator),
   asyncHandler(loginUser)
 );
-userRoutes.post(
+userAuthRoutes.post(
   "/logout",
   validateSchema(validateAuthId),
   asyncHandler(logoutUser)
 );
 
-userRoutes.post("/refresh-token", asyncHandler(refreshToken));
+userAuthRoutes.post("/refresh-token", asyncHandler(refreshToken));

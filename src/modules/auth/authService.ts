@@ -13,11 +13,22 @@ export const loginUserService = async (email: string, password: string) => {
       error.message ?? "Something went wrong"
     );
   }
+
+  if (data?.user?.role === "admin" && data?.session?.access_token) {
+    await userClient.auth.admin.signOut(data.session.access_token);
+    throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "User not found");
+  }
+
   return {
-    user: data.user,
-    accessToken: data.session?.access_token,
-    refreshToken: data.session?.refresh_token,
-    expiresIn: data.session?.expires_at,
+    user: {
+      id: data.user.id,
+      email: data.user.email,
+    },
+    auth: {
+      accessToken: data.session?.access_token,
+      refreshToken: data.session?.refresh_token,
+      expiresIn: data.session?.expires_at,
+    },
   };
 };
 
