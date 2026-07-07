@@ -94,7 +94,7 @@ const findRecommendedMeals = async (
 };
 
 export const getDashboardService = async (
-  userId: number,
+  userId: string,
   date: string
 ): Promise<Dashboard> => {
   const user = await getUserByIdService(userId);

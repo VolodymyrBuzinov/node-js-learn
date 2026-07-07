@@ -12,7 +12,7 @@ export const getUsersData = async () => {
   return rows as User[];
 };
 
-export const getUserByIdService = async (userId: number) => {
+export const getUserByIdService = async (userId: string) => {
   const { rows } = await pool.query(
     `
     SELECT id, name, email, password, created_at AS "createdAt", updated_at AS "updatedAt", age, weight, gender, height, activity_level AS "activityLevel"
@@ -28,7 +28,7 @@ export const getUserByIdService = async (userId: number) => {
 };
 
 export const updateUserService = async (
-  userId: number,
+  userId: string,
   { name, age, weight, gender, height, activityLevel }: Partial<User>
 ) => {
   const user = await getUserByIdService(userId);

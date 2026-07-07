@@ -11,7 +11,7 @@ export const getMealsPlanByUserId = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const { date } = req.query;
   const mealsPlan = await getMealsPlanByUserIdAndDateService(
-    Number(userId),
+    userId as string,
     String(date)
   );
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: mealsPlan });
@@ -19,7 +19,7 @@ export const getMealsPlanByUserId = async (req: Request, res: Response) => {
 
 export const createMealsPlan = async (req: Request, res: Response) => {
   const { userId, meals, date } = req.body;
-  const mealsPlan = await createMealsPlanService(Number(userId), meals, date);
+  const mealsPlan = await createMealsPlanService(userId as string, meals, date);
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: mealsPlan });
 };
 
@@ -27,8 +27,8 @@ export const updateMealsPlan = async (req: Request, res: Response) => {
   const { userId, meals, date } = req.body;
   const { planId } = req.params;
   const mealsPlan = await updateMealsPlanService(
-    Number(planId),
-    Number(userId),
+    planId as string,
+    userId as string,
     meals,
     date
   );
@@ -37,7 +37,7 @@ export const updateMealsPlan = async (req: Request, res: Response) => {
 
 export const resetMealsPlan = async (req: Request, res: Response) => {
   const { planId } = req.params;
-  const mealsPlan = await resetMealsPlanService(Number(planId));
+  const mealsPlan = await resetMealsPlanService(planId as string);
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({
     message: "Meals plan reset successfully",
     data: mealsPlan,

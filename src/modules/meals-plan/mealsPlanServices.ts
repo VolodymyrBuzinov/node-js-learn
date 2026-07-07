@@ -23,7 +23,7 @@ const withTransaction = async <T>(
 };
 
 export const getMealsPlanByUserIdAndDateService = async (
-  userId: number,
+  userId: string,
   date: string
 ) => {
   const { rows: plans } = await pool.query(
@@ -65,7 +65,7 @@ export const getMealsPlanByUserIdAndDateService = async (
 };
 
 export const createMealsPlanService = async (
-  userId: number,
+  userId: string,
   mealsIds: number[],
   date: string
 ) => {
@@ -111,8 +111,8 @@ export const createMealsPlanService = async (
 };
 
 export const updateMealsPlanService = async (
-  planId: number,
-  userId: number,
+  planId: string,
+  userId: string,
   mealsIds: number[],
   date: string
 ) => {
@@ -147,7 +147,7 @@ export const updateMealsPlanService = async (
   return getMealsPlanByUserIdAndDateService(userId, date);
 };
 
-export const resetMealsPlanService = async (id: number) => {
+export const resetMealsPlanService = async (id: string) => {
   const { rows } = await pool.query(
     `
     SELECT id, user_id AS "userId", date

@@ -15,6 +15,12 @@ export const loginAdminService = async (email: string, password: string) => {
       error?.code
     );
   }
+
+  if (data?.user?.role !== "admin") {
+    logoutAdminService();
+    throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "User not found");
+  }
+
   const { rows } = await pool.query(
     `SELECT id, email, name, role FROM profiles WHERE id = $1`,
     [data.user?.id]
