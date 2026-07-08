@@ -1,55 +1,44 @@
-import { format } from "date-fns";
-import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
-import { User } from "../user/userTypes.js";
+import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { AppError } from "@/services/appError.js";
-import { pool } from "@/config/db/pool.js";
 import { adminClient } from "@/config/supabase.js";
+import { prisma } from "@/config/db/prisma.js";
+import { SortOrder } from "@/generated/prisma/internal/prismaNamespace.js";
 
 export interface AdminUsersFilters {
   sortBy?: string;
-  sortOrder?: "ASC" | "DESC";
+  sortOrder?: SortOrder;
   email?: string;
 }
 
 export const getAdminUsersWithFiltersService = async ({
   sortBy,
-  sortOrder = "ASC",
+  sortOrder = "asc",
   email,
 }: AdminUsersFilters) => {
-  const conditions: string[] = [];
-  const values: string[] = [];
-
-  if (email) {
-    values.push(`%${email}%`);
-    conditions.push(`email ILIKE $${values.length}`);
-  }
-
-  const whereClause = conditions.length
-    ? `WHERE ${conditions.join(" AND ")}`
-    : "";
-
-  const orderClause =
-    sortBy === "name" ? `ORDER BY name ${sortOrder}, id ${sortOrder}` : "";
-
-  const { rows } = await pool.query(
-    `SELECT id, name, email, created_at AS "createdAt", updated_at AS "updatedAt",
-     age, weight, gender, height, activity_level AS "activityLevel" FROM users
-    ${whereClause}
-    ${orderClause}
-    `,
-    values
-  );
-
-  return rows as User[];
+  return prisma.public_users.findMany({
+    where: email
+      ? {
+          email: {
+            contains: email,
+            mode: "insensitive",
+          },
+        }
+      : undefined,
+    orderBy:
+      sortBy === "name" ? [{ name: sortOrder }, { id: sortOrder }] : undefined,
+  });
 };
 
 export const getUserByIdService = async (userId: string) => {
-  const { rows } = await pool.query(
-    `SELECT id, name, email, created_at AS "createdAt", updated_at AS "updatedAt",
-     age, weight, gender, height, activity_level AS "activityLevel" FROM users WHERE id = $1`,
-    [userId]
-  );
-  return rows[0] as User;
+  const user = await prisma.public_users.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (!user) {
+    throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "User not found");
+  }
+  return user;
 };
 
 export const createUserAsAdminService = async (
@@ -57,14 +46,6 @@ export const createUserAsAdminService = async (
   email: string,
   password: string
 ) => {
-  const { rows: existing } = await pool.query(
-    "SELECT 1 FROM users WHERE email = $1",
-    [email]
-  );
-  if (existing.length) {
-    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "User already exists");
-  }
-
   const { data: authData, error: authError } =
     await adminClient.auth.admin.createUser({
       email,
@@ -82,38 +63,50 @@ export const createUserAsAdminService = async (
   }
 
   const userId = authData.user.id;
-  const createdAt = format(new Date(), DATE_FORMAT);
+  const createdAt = new Date();
 
   try {
-    await pool.query(
-      `INSERT INTO profiles (id, email, name, role, created_at)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [userId, email, name, "user", createdAt]
-    );
+    await prisma.profiles.upsert({
+      where: { id: userId },
+      create: {
+        id: userId,
+        email,
+        name,
+        role: "user",
+        createdAt,
+      },
+      update: {
+        email,
+        name,
+        role: "user",
+      },
+    });
 
-    await pool.query(
-      `INSERT INTO users (id, name, email, created_at, age, weight, gender, height, activity_level)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-      [userId, name, email, createdAt, 0, 0, "", 0, ""]
-    );
+    const user = await prisma.public_users.create({
+      data: {
+        id: userId,
+        name,
+        email,
+        createdAt,
+        age: 0,
+        weight: 0,
+        gender: "",
+        height: 0,
+        activityLevel: "",
+      },
+    });
+
+    return user;
   } catch (error) {
     await adminClient.auth.admin.deleteUser(userId);
-    throw error;
+    const message =
+      error instanceof Error ? error.message : "Failed to create user";
+    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, message);
   }
-
-  const { rows } = await pool.query(
-    `SELECT id, name, email, created_at AS "createdAt", updated_at AS "updatedAt",
-     age, weight, gender, height, activity_level AS "activityLevel"
-     FROM users WHERE id = $1`,
-    [userId]
-  );
-
-  return { ...rows[0] } as User;
 };
 
 export const deleteUserAsAdminService = async (userId: string) => {
   await getUserByIdService(userId);
   await adminClient.auth.admin.deleteUser(userId);
-  await pool.query("DELETE FROM users WHERE id = $1", [userId]);
   return userId;
 };

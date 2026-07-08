@@ -27,3 +27,15 @@ export const validateSchema = (schema: z.ZodSchema) => {
     next();
   };
 };
+
+export const validateQuerySchema = (schema: z.ZodSchema) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const { error } = schema.safeParse(req.query);
+    if (error) {
+      return res
+        .status(HTTP_STATUS_CODES.BAD_REQUEST)
+        .json({ error: formatZodError(error) });
+    }
+    next();
+  };
+};

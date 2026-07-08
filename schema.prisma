@@ -538,7 +538,7 @@ model meals_plans {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model profiles {
   id         String        @id(map: "admins_pkey") @default(dbgenerated("auth.uid()")) @db.Uuid
-  created_at DateTime      @db.Date
+  createdAt  DateTime  @map("created_at") @db.Date
   email      String        @unique(map: "admins_email_key") @default("") @db.VarChar
   name       String        @default("") @db.VarChar
   role       String        @default("") @db.VarChar
@@ -551,15 +551,15 @@ model profiles {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model public_users {
   id             String    @id @default(dbgenerated("auth.uid()")) @db.Uuid
-  created_at     DateTime  @db.Date
-  updated_at     DateTime? @db.Date
+  createdAt      DateTime  @map("created_at") @db.Date
+  updatedAt      DateTime? @map("updated_at") @db.Date
   name           String    @default("") @db.VarChar
   email          String    @unique @default("") @db.VarChar
   age            Int       @default(0)
   height         Int       @default(0)
   weight         Int       @default(0)
   gender         String    @default("") @db.VarChar
-  activity_level String    @default("") @db.VarChar
+  activityLevel  String    @default("") @map("activity_level") @db.VarChar
   profiles       profiles  @relation(fields: [id], references: [id], onDelete: Cascade)
 
   @@map("users")

@@ -10,7 +10,7 @@ import {
   createUserAsAdminValidator,
   getUsersAsAdminValidator,
 } from "./adminUsersValidators.js";
-import { validateSchema } from "@/utils/validation.js";
+import { validateQuerySchema, validateSchema } from "@/utils/validation.js";
 import { adminAuthMiddleware } from "@/middlewares/authMiddlewares.js";
 
 export const adminUsersRoutes = express.Router();
@@ -18,7 +18,7 @@ export const adminUsersRoutes = express.Router();
 adminUsersRoutes.get(
   "/",
   adminAuthMiddleware,
-  validateSchema(getUsersAsAdminValidator),
+  validateQuerySchema(getUsersAsAdminValidator),
   asyncHandler(getUsersAsAdmin)
 );
 
