@@ -106,7 +106,12 @@ export const createUserAsAdminService = async (
 };
 
 export const deleteUserAsAdminService = async (userId: string) => {
-  await getUserByIdService(userId);
-  await adminClient.auth.admin.deleteUser(userId);
-  return userId;
+  const { error } = await adminClient.auth.admin.deleteUser(userId);
+  if (error) {
+    throw new AppError(
+      HTTP_STATUS_CODES.BAD_REQUEST,
+      error.message ?? "Failed to delete user",
+      error.code
+    );
+  }
 };

@@ -1,6 +1,13 @@
 import z from "zod";
 import { MEAL_TYPE_VALUES } from "../meals/mealsTypes.js";
 import { mealProductValidator } from "../meals/mealsValidators.js";
+import { SORT_ORDER } from "@/config/consts.js";
+
+export const getMealsAsAdminValidator = z.object({
+  sortBy: z.enum(["name", "type"]).optional(),
+  sortOrder: z.enum(SORT_ORDER).optional(),
+  search: z.string().optional(),
+});
 
 const mealCompositionValidator = z.object({
   calories: z.number(),

@@ -6,9 +6,15 @@ import {
   updateMealAsAdminService,
 } from "./adminMealsServices.js";
 import { getMealByIdService, getMealsService } from "../meals/mealsService.js";
+import { SortOrder } from "@/generated/prisma/internal/prismaNamespace.js";
 
-export const getMealsAsAdmin = async (_req: Request, res: Response) => {
-  const meals = await getMealsService();
+export const getMealsAsAdmin = async (req: Request, res: Response) => {
+  const { sortBy, sortOrder, search } = req.query;
+  const meals = await getMealsService({
+    sortBy: sortBy as string,
+    sortOrder: sortOrder as SortOrder,
+    search: search as string,
+  });
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: { meals } });
 };
 
