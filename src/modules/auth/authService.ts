@@ -1,6 +1,7 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { userClient } from "@/config/supabase.js";
 import { AppError } from "@/services/appError.js";
+import { getUserByIdService } from "../user/userService.js";
 
 export const loginUserService = async (email: string, password: string) => {
   const { data, error } = await userClient.auth.signInWithPassword({
@@ -19,11 +20,10 @@ export const loginUserService = async (email: string, password: string) => {
     throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "User not found");
   }
 
+  const profile = await getUserByIdService(data.user.id);
+
   return {
-    user: {
-      id: data.user.id,
-      email: data.user.email,
-    },
+    user: profile,
     auth: {
       accessToken: data.session?.access_token,
       refreshToken: data.session?.refresh_token,

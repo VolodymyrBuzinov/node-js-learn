@@ -24,14 +24,16 @@ export const loginAdminService = async (email: string, password: string) => {
   }
 
   return {
-    admin: {
+    user: {
       email: profile.email,
       name: profile.name,
       role: profile.role,
     },
-    accessToken: data.session?.access_token,
-    refreshToken: data.session?.refresh_token,
-    expiresIn: data.session?.expires_at,
+    auth: {
+      accessToken: data.session?.access_token,
+      refreshToken: data.session?.refresh_token,
+      expiresIn: data.session?.expires_at,
+    },
   };
 };
 

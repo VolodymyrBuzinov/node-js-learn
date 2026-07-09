@@ -27,9 +27,3 @@ export const loginAuthValidator = z.object({
   email: emailValidation(),
   password: passwordValidation(),
 });
-
-export const validateAuthId = z.object({
-  userId: z
-    .number({ error: "User ID must be a positive number" })
-    .positive({ error: "User ID must be a positive number" }),
-});

@@ -15,7 +15,7 @@ export const loginUser = async (req: Request, res: Response) => {
   });
 };
 
-export const logoutUser = async (req: Request, res: Response) => {
+export const logoutUser = async (_req: Request, res: Response) => {
   await logoutUserService();
   return res
     .status(HTTP_STATUS_CODES.NO_CONTENT)
