@@ -1,4 +1,6 @@
+import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { ActivityLevel, Gender, User } from "@/modules/user/userTypes.js";
+import { AppError } from "@/services/appError.js";
 
 const ACTIVITY_MULTIPLIERS: Record<string, number> = {
   малий: 1.2,
@@ -36,4 +38,13 @@ export const calculateUserNormaValues = (user: User) => {
   const carbohydrates = calculateCarbohydrates(tdee);
   const fat = calculateFat(tdee);
   return { bmr, tdee, protein, carbohydrates, fat };
+};
+
+export const matchOwnership = (userId: string, authUserId: string) => {
+  if (userId !== authUserId) {
+    throw new AppError(
+      HTTP_STATUS_CODES.FORBIDDEN,
+      "You are not the owner of this resource"
+    );
+  }
 };

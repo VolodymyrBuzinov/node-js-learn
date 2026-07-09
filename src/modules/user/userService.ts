@@ -1,7 +1,8 @@
 import { AppError } from "@/services/appError.js";
-import { HTTP_STATUS_CODES } from "@/config/consts.js";
+import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
 import { User } from "@/modules/user/userTypes.js";
 import { prisma } from "@/config/db/prisma.js";
+import { format } from "date-fns";
 
 export const getUsersData = async () => {
   const users = await prisma.public_users.findMany();
@@ -29,7 +30,10 @@ export const updateUserService = async (
     where: {
       id: userId,
     },
-    data,
+    data: {
+      ...data,
+      updatedAt: format(new Date(), DATE_FORMAT),
+    },
   });
 
   if (data.name) {

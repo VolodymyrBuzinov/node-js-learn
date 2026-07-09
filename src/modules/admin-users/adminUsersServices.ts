@@ -1,8 +1,9 @@
-import { HTTP_STATUS_CODES } from "@/config/consts.js";
+import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
 import { AppError } from "@/services/appError.js";
 import { adminClient } from "@/config/supabase.js";
 import { prisma } from "@/config/db/prisma.js";
 import { SortOrder } from "@/generated/prisma/internal/prismaNamespace.js";
+import { format } from "date-fns";
 
 export interface AdminUsersFilters {
   sortBy?: string;
@@ -63,7 +64,7 @@ export const createUserAsAdminService = async (
   }
 
   const userId = authData.user.id;
-  const createdAt = new Date();
+  const createdAt = format(new Date(), DATE_FORMAT);
 
   try {
     await prisma.profiles.upsert({
