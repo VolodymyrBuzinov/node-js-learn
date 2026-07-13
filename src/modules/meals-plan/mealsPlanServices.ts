@@ -1,110 +1,51 @@
 import { AppError } from "@/services/appError.js";
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
-import { MealsPlan } from "@/modules/meals-plan/mealsPlanTypes.js";
-import { pool } from "@/config/db/pool.js";
-import pg from "pg";
-
-const withTransaction = async <T>(
-  fn: (client: pg.PoolClient) => Promise<T>
-): Promise<T> => {
-  const client = await pool.connect();
-
-  try {
-    await client.query("BEGIN");
-    const result = await fn(client);
-    await client.query("COMMIT");
-    return result;
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
-};
+import { prisma } from "@/config/db/prisma.js";
 
 export const getMealsPlanByUserIdAndDateService = async (
   userId: string,
   date: string
 ) => {
-  const { rows: plans } = await pool.query(
-    `
-    SELECT id, user_id AS "userId", date
-    FROM meals_plans
-    WHERE user_id = $1 AND date = $2
-  `,
-    [userId, date]
-  );
+  const plan = await prisma.meals_plans.findFirst({
+    where: {
+      user_id: userId,
+      date,
+    },
+  });
 
-  if (!plans.length) {
+  if (!plan) {
     throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Meals plan not found");
   }
-  const plan = plans[0] as MealsPlan;
 
-  const { rows: meals } = await pool.query(
-    `
-    SELECT
-      m.id,
-      m.name,
-      m.description,
-      m.image_url AS "imageUrl",
-      m.type,
-      m.composition
-    FROM meals_plan_items mpi
-    JOIN meals m ON m.id = mpi.meal_id
-    WHERE mpi.meals_plan_id = $1
-    `,
-    [plan.id]
-  );
+  const planMeals = await prisma.meals_plan_items.findMany({
+    where: {
+      meals_plan_id: plan.id,
+    },
+  });
 
   return {
     id: plan.id,
-    userId: plan.userId,
-    date: plan.date,
-    meals,
+    userId,
+    date,
+    meals: planMeals,
   };
 };
 
 export const createMealsPlanService = async (
   userId: string,
-  mealsIds: number[],
+  mealsIds: string[],
   date: string
 ) => {
-  await withTransaction(async (client) => {
-    const { rows: existingPlans } = await client.query(
-      `
-      SELECT id FROM meals_plans
-      WHERE user_id = $1 AND date = $2
-      `,
-      [userId, date]
-    );
-
-    if (existingPlans.length) {
-      throw new AppError(
-        HTTP_STATUS_CODES.BAD_REQUEST,
-        "Meals plan for this date already exists"
-      );
-    }
-
-    const { rows: newPlans } = await client.query(
-      `
-      INSERT INTO meals_plans (user_id, date)
-      VALUES ($1, $2)
-      RETURNING id
-      `,
-      [userId, date]
-    );
-
-    const planId = newPlans[0].id;
-
-    for (const mealId of mealsIds) {
-      await client.query(
-        `
-        INSERT INTO meals_plan_items (meals_plan_id, meal_id)
-        VALUES ($1, $2)
-        `,
-        [planId, mealId]
-      );
-    }
+  await prisma.meals_plans.create({
+    data: {
+      user_id: userId,
+      date,
+      meals_plan_items: {
+        create: mealsIds.map((mealId) => ({
+          meal_id: mealId,
+        })),
+      },
+    },
   });
 
   return getMealsPlanByUserIdAndDateService(userId, date);
@@ -113,63 +54,40 @@ export const createMealsPlanService = async (
 export const updateMealsPlanService = async (
   planId: string,
   userId: string,
-  mealsIds: number[],
+  mealsIds: string[],
   date: string
 ) => {
-  await withTransaction(async (client) => {
-    const { rows: existingPlans } = await client.query(
-      `
-      SELECT id FROM meals_plans
-      WHERE id = $1 AND user_id = $2 AND date = $3
-      `,
-      [planId, userId, date]
-    );
-
-    if (!existingPlans.length) {
-      throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Meals plan not found");
-    }
-
-    const existingPlan = existingPlans[0];
-
-    await client.query(
-      `DELETE FROM meals_plan_items WHERE meals_plan_id = $1`,
-      [existingPlan.id]
-    );
-
-    for (const mealId of mealsIds) {
-      await client.query(
-        `INSERT INTO meals_plan_items (meals_plan_id, meal_id) VALUES ($1, $2)`,
-        [existingPlan.id, mealId]
-      );
-    }
+  await prisma.meals_plans.update({
+    where: {
+      id: planId,
+    },
+    data: {
+      meals_plan_items: {
+        create: mealsIds.map((mealId) => ({
+          meal_id: mealId,
+        })),
+      },
+    },
   });
 
   return getMealsPlanByUserIdAndDateService(userId, date);
 };
 
 export const resetMealsPlanService = async (id: string) => {
-  const { rows } = await pool.query(
-    `
-    SELECT id, user_id AS "userId", date
-    FROM meals_plans
-    WHERE id = $1
-    `,
-    [id]
-  );
-
-  if (!rows.length) {
-    throw new AppError(HTTP_STATUS_CODES.NOT_FOUND, "Meals plan not found");
-  }
-
-  await pool.query(`DELETE FROM meals_plan_items WHERE meals_plan_id = $1`, [
-    id,
-  ]);
-
-  const plan = rows[0];
+  const plan = await prisma.meals_plans.update({
+    where: {
+      id,
+    },
+    data: {
+      meals_plan_items: {
+        deleteMany: {},
+      },
+    },
+  });
 
   return {
     id: plan.id,
-    userId: plan.userId,
+    userId: plan.user_id,
     date: plan.date,
     meals: [],
   };

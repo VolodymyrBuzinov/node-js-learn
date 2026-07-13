@@ -64,7 +64,7 @@ const findRecommendedMeals = async (
     return [];
   }
 
-  const allMeals = await getMealsService();
+  const allMeals = await getMealsService({});
   const recommendedMeals: Meal[] = [];
 
   for (const meal of allMeals) {

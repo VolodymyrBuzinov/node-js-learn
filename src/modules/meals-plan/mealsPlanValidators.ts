@@ -3,7 +3,7 @@ import z from "zod";
 import { DATE_FORMAT } from "@/config/consts.js";
 
 export const mealsPlanValidator = z.object({
-  userId: z.number(),
+  userId: z.string(),
   date: z.string().refine(
     (date) => {
       const parsed = parse(date, DATE_FORMAT, new Date());
@@ -14,6 +14,6 @@ export const mealsPlanValidator = z.object({
     }
   ),
   meals: z
-    .array(z.number())
+    .array(z.string())
     .min(1, { message: "Meals plan must contain at least one meal" }),
 });

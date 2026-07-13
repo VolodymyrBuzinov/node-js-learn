@@ -8,18 +8,29 @@ import {
 } from "./mealsPlanControllers.js";
 import { validateSchema } from "@/utils/validation.js";
 import { mealsPlanValidator } from "./mealsPlanValidators.js";
+import { userAuthMiddleware } from "@/middlewares/authMiddlewares.js";
 
 export const mealsPlanRoutes = express.Router();
 
-mealsPlanRoutes.get("/:userId", asyncHandler(getMealsPlanByUserId));
+mealsPlanRoutes.get(
+  "/:userId",
+  userAuthMiddleware,
+  asyncHandler(getMealsPlanByUserId)
+);
 mealsPlanRoutes.post(
   "/",
+  userAuthMiddleware,
   validateSchema(mealsPlanValidator),
   asyncHandler(createMealsPlan)
 );
 mealsPlanRoutes.put(
   "/:planId",
+  userAuthMiddleware,
   validateSchema(mealsPlanValidator),
   asyncHandler(updateMealsPlan)
 );
-mealsPlanRoutes.patch("/:planId/reset", asyncHandler(resetMealsPlan));
+mealsPlanRoutes.patch(
+  "/:planId/reset",
+  userAuthMiddleware,
+  asyncHandler(resetMealsPlan)
+);
