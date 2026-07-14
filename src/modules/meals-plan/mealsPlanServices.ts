@@ -21,13 +21,16 @@ export const getMealsPlanByUserIdAndDateService = async (
     where: {
       meals_plan_id: plan.id,
     },
+    include: {
+      meals: true,
+    },
   });
 
   return {
     id: plan.id,
     userId,
     date,
-    meals: planMeals,
+    meals: planMeals.map((item) => item.meals),
   };
 };
 

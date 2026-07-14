@@ -2,10 +2,11 @@ import { calculateUserNormaValues } from "@/utils/index.js";
 import { getMealsPlanByUserIdAndDateService } from "../meals-plan/mealsPlanServices.js";
 import { getMealsService } from "../meals/mealsService.js";
 import { getUserByIdService } from "../user/userService.js";
-import { User } from "../user/userTypes.js";
+import { ActivityLevel, Gender, User } from "../user/userTypes.js";
 import { Dashboard, DashboardProgress } from "./dashboardTypes.js";
-import { MealsPlan } from "../meals-plan/mealsPlanTypes.js";
 import { Meal } from "../meals/mealsTypes.js";
+
+const fallbackNegativeValue = (value: number) => (value < 0 ? 0 : value);
 
 const PROFILE_FIELDS = [
   "age",
@@ -18,10 +19,7 @@ const PROFILE_FIELDS = [
 const isProfileComplete = (user: User) =>
   PROFILE_FIELDS.every((field) => user[field] != null);
 
-const calculateProgress = (
-  mealsPlan: MealsPlan,
-  user: User
-): DashboardProgress => {
+const calculateProgress = (meals: Meal[], user: User): DashboardProgress => {
   const norms = calculateUserNormaValues(user);
 
   let consumedCalories = 0;
@@ -29,7 +27,7 @@ const calculateProgress = (
   let consumedCarbohydrates = 0;
   let consumedFat = 0;
 
-  for (const meal of mealsPlan.meals) {
+  for (const meal of meals) {
     consumedCalories += meal.composition.calories;
     consumedProtein += meal.composition.protein;
     consumedCarbohydrates += meal.composition.carbohydrates;
@@ -39,25 +37,27 @@ const calculateProgress = (
   return {
     calories: {
       consumed: consumedCalories,
-      remaining: norms.tdee - consumedCalories,
+      remaining: fallbackNegativeValue(norms.tdee - consumedCalories),
     },
     protein: {
       consumed: consumedProtein,
-      remaining: norms.protein - consumedProtein,
+      remaining: fallbackNegativeValue(norms.protein - consumedProtein),
     },
     carbohydrates: {
       consumed: consumedCarbohydrates,
-      remaining: norms.carbohydrates - consumedCarbohydrates,
+      remaining: fallbackNegativeValue(
+        norms.carbohydrates - consumedCarbohydrates
+      ),
     },
     fat: {
       consumed: consumedFat,
-      remaining: norms.fat - consumedFat,
+      remaining: fallbackNegativeValue(norms.fat - consumedFat),
     },
   };
 };
 
 const findRecommendedMeals = async (
-  mealsPlan: MealsPlan,
+  meals: Meal[],
   progress: DashboardProgress
 ): Promise<Meal[]> => {
   if (progress.calories.remaining <= 0) {
@@ -68,7 +68,7 @@ const findRecommendedMeals = async (
   const recommendedMeals: Meal[] = [];
 
   for (const meal of allMeals) {
-    const isAlreadyUsed = mealsPlan.meals.some(
+    const isAlreadyUsed = meals.some(
       (plannedMeal) =>
         plannedMeal.type === meal.type || plannedMeal.id === meal.id
     );
@@ -77,17 +77,19 @@ const findRecommendedMeals = async (
       continue;
     }
 
+    const composition = meal.composition as unknown as Meal["composition"];
+
     const isWithinDailyNorm =
-      meal.composition.calories <= progress.calories.remaining &&
-      meal.composition.protein <= progress.protein.remaining &&
-      meal.composition.carbohydrates <= progress.carbohydrates.remaining &&
-      meal.composition.fat <= progress.fat.remaining;
+      composition.calories <= progress.calories.remaining &&
+      composition.protein <= progress.protein.remaining &&
+      composition.carbohydrates <= progress.carbohydrates.remaining &&
+      composition.fat <= progress.fat.remaining;
 
     if (!isWithinDailyNorm) {
       continue;
     }
 
-    recommendedMeals.push(meal);
+    recommendedMeals.push(meal as unknown as Meal);
   }
 
   return recommendedMeals;
@@ -99,13 +101,27 @@ export const getDashboardService = async (
 ): Promise<Dashboard> => {
   const user = await getUserByIdService(userId);
 
-  if (!isProfileComplete(user)) {
+  if (
+    !isProfileComplete({
+      ...user,
+      gender: user.gender as Gender,
+      activityLevel: user.activityLevel as ActivityLevel,
+    })
+  ) {
     return { progress: null, recommendedMeals: [] };
   }
 
   const mealsPlan = await getMealsPlanByUserIdAndDateService(userId, date);
-  const progress = calculateProgress(mealsPlan, user);
-  const recommendedMeals = await findRecommendedMeals(mealsPlan, progress);
+
+  const progress = calculateProgress(
+    mealsPlan.meals as unknown as Meal[],
+    user as unknown as User
+  );
+
+  const recommendedMeals = await findRecommendedMeals(
+    mealsPlan.meals as unknown as Meal[],
+    progress
+  );
 
   return { progress, recommendedMeals };
 };

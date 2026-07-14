@@ -19,21 +19,29 @@ const calculateBMR = (
   age: number,
   gender: Gender
 ) => {
+  if (!weight || !height || !age || !gender) return 0;
   const base = 10 * weight + 6.25 * height - 5 * age;
   return GENDER_BASE[gender](base);
 };
 
-const calculateTDEE = (bmr: number, activityLevel: ActivityLevel) =>
-  Math.round(bmr * ACTIVITY_MULTIPLIERS[activityLevel]);
+const calculateTDEE = (bmr: number, activityLevel: ActivityLevel) => {
+  if (!activityLevel) return 0;
+  return Math.round(bmr * ACTIVITY_MULTIPLIERS[activityLevel]);
+};
 
 const calculateProtein = (tdee: number) => Math.round(tdee * 0.25);
 const calculateCarbohydrates = (tdee: number) => Math.round(tdee * 0.4);
 const calculateFat = (tdee: number) => Math.round(tdee * 0.3);
 
-export const calculateUserNormaValues = (user: User) => {
-  const { weight, height, age, gender } = user;
+export const calculateUserNormaValues = ({
+  weight,
+  height,
+  age,
+  gender,
+  activityLevel,
+}: User) => {
   const bmr = calculateBMR(weight, height, age, gender);
-  const tdee = calculateTDEE(bmr, user.activityLevel);
+  const tdee = calculateTDEE(bmr, activityLevel);
   const protein = calculateProtein(tdee);
   const carbohydrates = calculateCarbohydrates(tdee);
   const fat = calculateFat(tdee);

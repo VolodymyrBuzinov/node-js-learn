@@ -7,7 +7,7 @@ export type MealProduct = {
 };
 
 export type Meal = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   imageUrl: string;
