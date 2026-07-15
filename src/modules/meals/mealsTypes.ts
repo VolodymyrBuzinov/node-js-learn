@@ -11,6 +11,7 @@ export type Meal = {
   name: string;
   description: string;
   imageUrl: string;
+  slug: string;
   type: MealType;
   composition: {
     calories: number;

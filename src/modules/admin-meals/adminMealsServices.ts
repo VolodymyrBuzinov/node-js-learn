@@ -3,11 +3,29 @@ import { getMealByIdService } from "../meals/mealsService.js";
 import { Meal } from "../meals/mealsTypes.js";
 import { AppError } from "@/services/appError.js";
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
+import { adminClient } from "@/config/supabase.js";
 
-export const createMealAsAdminService = async (meal: Omit<Meal, "id">) => {
+export const createMealAsAdminService = async (
+  meal: Omit<Meal, "id" | "imageUrl">,
+  image: File
+) => {
   try {
+    const { data: storageData, error } = await adminClient.storage
+      .from("meals")
+      .upload(`${meal.slug}/image`, image);
+
+    if (error) {
+      throw new AppError(
+        HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+        error.message ?? "Failed to upload image"
+      );
+    }
+
     const newMeal = await prisma.meals.create({
-      data: meal,
+      data: {
+        ...meal,
+        imageUrl: storageData.fullPath,
+      },
     });
     return newMeal;
   } catch (error) {

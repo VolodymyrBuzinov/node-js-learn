@@ -25,14 +25,17 @@ export const getMealByIdAsAdmin = async (req: Request, res: Response) => {
 };
 
 export const createMealAsAdmin = async (req: Request, res: Response) => {
-  const { name, description, imageUrl, type, composition } = req.body;
-  const meal = await createMealAsAdminService({
-    name,
-    description,
-    imageUrl,
-    type,
-    composition,
-  });
+  const { name, description, image, type, composition, slug } = req.body;
+  const meal = await createMealAsAdminService(
+    {
+      name,
+      description,
+      type,
+      composition,
+      slug,
+    },
+    image
+  );
   return res.status(HTTP_STATUS_CODES.CREATED).json({ data: { meal } });
 };
 
