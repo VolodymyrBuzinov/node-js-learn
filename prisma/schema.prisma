@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
   provider        = "prisma-client"
-  output          = "./src/generated/prisma"
+  output          = "../src/generated/prisma"
   previewFeatures = ["partialIndexes"]
 }
 
@@ -22,7 +22,7 @@ model auth_users {
 model meals {
   id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name             String             @default("") @db.VarChar
-  slug             String?            @map("slug") @db.VarChar
+  slug             String?            @unique @map("slug") @db.VarChar
   description      String             @default("") @db.VarChar
   imageUrl         String             @default("") @map("image_url") @db.VarChar
   type             String             @default("") @db.VarChar
