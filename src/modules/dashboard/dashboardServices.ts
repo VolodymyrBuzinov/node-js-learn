@@ -106,6 +106,7 @@ export const getDashboardService = async (
       ...user,
       gender: user.gender as Gender,
       activityLevel: user.activityLevel as ActivityLevel,
+      avatarUrl: user.avatarUrl ?? "",
     })
   ) {
     return { progress: null, recommendedMeals: [] };
