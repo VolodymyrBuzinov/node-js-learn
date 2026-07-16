@@ -3,10 +3,14 @@ import { Request, Response } from "express";
 import {
   createMealAsAdminService,
   deleteMealAsAdminService,
+  deleteMealImageService,
   updateMealAsAdminService,
+  updateMealImageService,
+  uploadMealImageService,
 } from "./adminMealsServices.js";
 import { getMealByIdService, getMealsService } from "../meals/mealsService.js";
 import { SortOrder } from "@/generated/prisma/internal/prismaNamespace.js";
+import type { ValidatedImageUpload } from "@/middlewares/imageUploadMiddleware.js";
 
 export const getMealsAsAdmin = async (req: Request, res: Response) => {
   const { sortBy, sortOrder, search } = req.query;
@@ -25,17 +29,15 @@ export const getMealByIdAsAdmin = async (req: Request, res: Response) => {
 };
 
 export const createMealAsAdmin = async (req: Request, res: Response) => {
-  const { name, description, image, type, composition, slug } = req.body;
-  const meal = await createMealAsAdminService(
-    {
-      name,
-      description,
-      type,
-      composition,
-      slug,
-    },
-    image
-  );
+  const { name, description, type, composition, slug, imageUrl } = req.body;
+  const meal = await createMealAsAdminService({
+    name,
+    description,
+    type,
+    composition,
+    slug,
+    imageUrl,
+  });
   return res.status(HTTP_STATUS_CODES.CREATED).json({ data: { meal } });
 };
 
@@ -56,4 +58,30 @@ export const deleteMealAsAdmin = async (req: Request, res: Response) => {
   const { mealId } = req.params;
   await deleteMealAsAdminService(mealId as unknown as string);
   return res.status(HTTP_STATUS_CODES.NO_CONTENT).json({});
+};
+
+export const uploadMealImage = async (req: Request, res: Response) => {
+  const { mealSlug } = req.params;
+  const image = res.locals.imageUpload;
+  const data = await uploadMealImageService(
+    mealSlug as unknown as string,
+    image
+  );
+  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data });
+};
+
+export const deleteMealImage = async (req: Request, res: Response) => {
+  const { mealSlug } = req.params;
+  await deleteMealImageService(mealSlug as unknown as string);
+  return res.status(HTTP_STATUS_CODES.NO_CONTENT).json({});
+};
+
+export const updateMealImage = async (req: Request, res: Response) => {
+  const { mealSlug } = req.params;
+  const image = res.locals.imageUpload;
+  const data = await updateMealImageService(
+    mealSlug as unknown as string,
+    image
+  );
+  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data });
 };

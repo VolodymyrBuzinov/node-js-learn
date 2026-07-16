@@ -4,28 +4,12 @@ import { Meal } from "../meals/mealsTypes.js";
 import { AppError } from "@/services/appError.js";
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { adminClient } from "@/config/supabase.js";
+import type { ValidatedImageUpload } from "@/middlewares/imageUploadMiddleware.js";
 
-export const createMealAsAdminService = async (
-  meal: Omit<Meal, "id" | "imageUrl">,
-  image: File
-) => {
+export const createMealAsAdminService = async (meal: Omit<Meal, "id">) => {
   try {
-    const { data: storageData, error } = await adminClient.storage
-      .from("meals")
-      .upload(`${meal.slug}/image`, image);
-
-    if (error) {
-      throw new AppError(
-        HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
-        error.message ?? "Failed to upload image"
-      );
-    }
-
     const newMeal = await prisma.meals.create({
-      data: {
-        ...meal,
-        imageUrl: storageData.fullPath,
-      },
+      data: meal,
     });
     return newMeal;
   } catch (error) {
@@ -64,4 +48,60 @@ export const deleteMealAsAdminService = async (mealId: string) => {
       id: mealId,
     },
   });
+};
+
+export const uploadMealImageService = async (
+  mealSlug: string,
+  image: ValidatedImageUpload
+) => {
+  const { data: storageData, error } = await adminClient.storage
+    .from("meals_images")
+    .upload(`${mealSlug ?? ""}/image`, image.stream, {
+      contentType: image.contentType,
+      duplex: "half",
+    });
+
+  if (error) {
+    throw new AppError(
+      HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      error.message ?? "Failed to upload the image"
+    );
+  }
+  return {
+    imageUrl: storageData.fullPath,
+  };
+};
+
+export const deleteMealImageService = async (mealSlug: string) => {
+  const { error } = await adminClient.storage
+    .from("meals_images")
+    .remove([`${mealSlug ?? ""}/image`]);
+  if (error) {
+    throw new AppError(
+      HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      error.message ?? "Failed to delete the image"
+    );
+  }
+};
+
+export const updateMealImageService = async (
+  mealSlug: string,
+  image: ValidatedImageUpload
+) => {
+  const { data: storageData, error } = await adminClient.storage
+    .from("meals_images")
+    .update(`${mealSlug ?? ""}/image`, image.stream, {
+      contentType: image.contentType,
+      duplex: "half",
+    });
+  if (error) {
+    throw new AppError(
+      HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      error.message ?? "Failed to update the image"
+    );
+  }
+
+  return {
+    imageUrl: storageData.fullPath,
+  };
 };

@@ -3,9 +3,12 @@ import express from "express";
 import {
   createMealAsAdmin,
   deleteMealAsAdmin,
+  deleteMealImage,
   getMealByIdAsAdmin,
   getMealsAsAdmin,
   updateMealAsAdmin,
+  updateMealImage,
+  uploadMealImage,
 } from "./adminMealsControllers.js";
 import {
   createMealAsAdminValidator,
@@ -14,6 +17,7 @@ import {
 } from "./adminMealsValidators.js";
 import { validateQuerySchema, validateSchema } from "@/utils/validation.js";
 import { adminAuthMiddleware } from "@/middlewares/authMiddlewares.js";
+import { validateImageUpload } from "@/middlewares/imageUploadMiddleware.js";
 
 export const adminMealsRoutes = express.Router();
 
@@ -44,3 +48,23 @@ adminMealsRoutes.patch(
 );
 
 adminMealsRoutes.delete("/:mealId", asyncHandler(deleteMealAsAdmin));
+
+adminMealsRoutes.post(
+  "/:mealSlug/image",
+  adminAuthMiddleware,
+  validateImageUpload(),
+  asyncHandler(uploadMealImage)
+);
+
+adminMealsRoutes.delete(
+  "/:mealSlug/image",
+  adminAuthMiddleware,
+  asyncHandler(deleteMealImage)
+);
+
+adminMealsRoutes.patch(
+  "/:mealSlug/image",
+  adminAuthMiddleware,
+  validateImageUpload(),
+  asyncHandler(updateMealImage)
+);
