@@ -56,9 +56,8 @@ export const uploadMealImageService = async (
 ) => {
   const { data: storageData, error } = await adminClient.storage
     .from("meals_images")
-    .upload(`${mealSlug ?? ""}/image`, image.stream, {
+    .upload(`${mealSlug ?? ""}/image`, image.buffer, {
       contentType: image.contentType,
-      duplex: "half",
     });
 
   if (error) {
@@ -90,9 +89,8 @@ export const updateMealImageService = async (
 ) => {
   const { data: storageData, error } = await adminClient.storage
     .from("meals_images")
-    .update(`${mealSlug ?? ""}/image`, image.stream, {
+    .update(`${mealSlug ?? ""}/image`, image.buffer, {
       contentType: image.contentType,
-      duplex: "half",
     });
   if (error) {
     throw new AppError(

@@ -17,7 +17,10 @@ import {
 } from "./adminMealsValidators.js";
 import { validateQuerySchema, validateSchema } from "@/utils/validation.js";
 import { adminAuthMiddleware } from "@/middlewares/authMiddlewares.js";
-import { validateImageUpload } from "@/middlewares/imageUploadMiddleware.js";
+import {
+  parseImageUpload,
+  validateImageUpload,
+} from "@/middlewares/imageUploadMiddleware.js";
 
 export const adminMealsRoutes = express.Router();
 
@@ -52,7 +55,8 @@ adminMealsRoutes.delete("/:mealId", asyncHandler(deleteMealAsAdmin));
 adminMealsRoutes.post(
   "/:mealSlug/image",
   adminAuthMiddleware,
-  validateImageUpload(),
+  parseImageUpload,
+  validateImageUpload,
   asyncHandler(uploadMealImage)
 );
 
@@ -65,6 +69,7 @@ adminMealsRoutes.delete(
 adminMealsRoutes.patch(
   "/:mealSlug/image",
   adminAuthMiddleware,
-  validateImageUpload(),
+  parseImageUpload,
+  validateImageUpload,
   asyncHandler(updateMealImage)
 );
