@@ -9,6 +9,7 @@ export type User = {
   gender: Gender;
   height: number;
   activityLevel: ActivityLevel;
+  avatarUrl: string;
 };
 
 export type Gender = (typeof GENDER_VALUES)[number];

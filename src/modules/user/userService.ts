@@ -3,6 +3,8 @@ import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
 import { User } from "@/modules/user/userTypes.js";
 import { prisma } from "@/config/db/prisma.js";
 import { format } from "date-fns";
+import { ValidatedImageUpload } from "@/middlewares/imageUploadMiddleware.js";
+import { userClient } from "@/config/supabase.js";
 
 export const getUsersData = async () => {
   const users = await prisma.public_users.findMany();
@@ -48,4 +50,38 @@ export const updateUserService = async (
   }
 
   return updatedUser;
+};
+
+export const updateUserAvatarService = async (
+  userId: string,
+  image: ValidatedImageUpload
+) => {
+  await getUserByIdService(userId);
+  const { data: storageData, error } = await userClient.storage
+    .from("users_avatars")
+    .upload(`${userId ?? ""}/avatar`, image.buffer, {
+      contentType: image.contentType,
+    });
+  if (error) {
+    throw new AppError(
+      HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      error.message ?? "Failed to upload the image"
+    );
+  }
+  return {
+    avatarUrl: `${process.env.SUPABASE_URL}/storage/v1/object/public/${storageData.fullPath}`,
+  };
+};
+
+export const deleteUserAvatarService = async (userId: string) => {
+  await getUserByIdService(userId);
+  const { error } = await userClient.storage
+    .from("users_avatars")
+    .remove([`${userId ?? ""}/avatar`]);
+  if (error) {
+    throw new AppError(
+      HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      error.message ?? "Failed to delete the image"
+    );
+  }
 };

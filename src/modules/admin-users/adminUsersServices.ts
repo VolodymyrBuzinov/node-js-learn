@@ -94,6 +94,7 @@ export const createUserAsAdminService = async (
         gender: "",
         height: 0,
         activityLevel: "",
+        avatarUrl: "",
       },
     });
 
