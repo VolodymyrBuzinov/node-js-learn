@@ -3,24 +3,24 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const userClient = createClient(
-  process.env.SUPABASE_URL ?? "",
-  process.env.SUPABASE_KEY ?? "",
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
+const clientOptions = {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+};
 
-export const adminClient = createClient(
+export const createAuthClient = () =>
+  createClient(
+    process.env.SUPABASE_URL ?? "",
+    process.env.SUPABASE_KEY ?? "",
+    clientOptions
+  );
+
+export const authVerifierClient = createAuthClient();
+
+export const serviceClient = createClient(
   process.env.SUPABASE_URL ?? "",
   process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
+  clientOptions
 );

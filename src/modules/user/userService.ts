@@ -4,7 +4,7 @@ import { User } from "@/modules/user/userTypes.js";
 import { prisma } from "@/config/db/prisma.js";
 import { format } from "date-fns";
 import { ValidatedImageUpload } from "@/middlewares/imageUploadMiddleware.js";
-import { userClient } from "@/config/supabase.js";
+import { serviceClient } from "@/config/supabase.js";
 
 export const getUsersData = async () => {
   const users = await prisma.public_users.findMany();
@@ -57,10 +57,11 @@ export const updateUserAvatarService = async (
   image: ValidatedImageUpload
 ) => {
   await getUserByIdService(userId);
-  const { data: storageData, error } = await userClient.storage
+  const { data: storageData, error } = await serviceClient.storage
     .from("users_avatars")
-    .upload(`${userId ?? ""}/avatar`, image.buffer, {
+    .upload(`${userId}/avatar`, image.buffer, {
       contentType: image.contentType,
+      upsert: true,
     });
   if (error) {
     throw new AppError(
@@ -75,9 +76,9 @@ export const updateUserAvatarService = async (
 
 export const deleteUserAvatarService = async (userId: string) => {
   await getUserByIdService(userId);
-  const { error } = await userClient.storage
+  const { error } = await serviceClient.storage
     .from("users_avatars")
-    .remove([`${userId ?? ""}/avatar`]);
+    .remove([`${userId}/avatar`]);
   if (error) {
     throw new AppError(
       HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,

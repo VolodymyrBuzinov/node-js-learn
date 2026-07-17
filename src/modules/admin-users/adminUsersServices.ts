@@ -1,6 +1,6 @@
 import { DATE_FORMAT, HTTP_STATUS_CODES } from "@/config/consts.js";
 import { AppError } from "@/services/appError.js";
-import { adminClient } from "@/config/supabase.js";
+import { serviceClient } from "@/config/supabase.js";
 import { prisma } from "@/config/db/prisma.js";
 import { SortOrder } from "@/generated/prisma/internal/prismaNamespace.js";
 import { format } from "date-fns";
@@ -48,7 +48,7 @@ export const createUserAsAdminService = async (
   password: string
 ) => {
   const { data: authData, error: authError } =
-    await adminClient.auth.admin.createUser({
+    await serviceClient.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -100,7 +100,7 @@ export const createUserAsAdminService = async (
 
     return user;
   } catch (error) {
-    await adminClient.auth.admin.deleteUser(userId);
+    await serviceClient.auth.admin.deleteUser(userId);
     const message =
       error instanceof Error ? error.message : "Failed to create user";
     throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, message);
@@ -108,7 +108,7 @@ export const createUserAsAdminService = async (
 };
 
 export const deleteUserAsAdminService = async (userId: string) => {
-  const { error } = await adminClient.auth.admin.deleteUser(userId);
+  const { error } = await serviceClient.auth.admin.deleteUser(userId);
   if (error) {
     throw new AppError(
       HTTP_STATUS_CODES.BAD_REQUEST,

@@ -1,10 +1,11 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
-import { userClient } from "@/config/supabase.js";
+import { createAuthClient, serviceClient } from "@/config/supabase.js";
 import { AppError } from "@/services/appError.js";
 import { getAdminService } from "../admin/adminServices.js";
 
 export const loginAdminService = async (email: string, password: string) => {
-  const { data, error } = await userClient.auth.signInWithPassword({
+  const authClient = createAuthClient();
+  const { data, error } = await authClient.auth.signInWithPassword({
     email,
     password,
   });
@@ -19,7 +20,9 @@ export const loginAdminService = async (email: string, password: string) => {
   const profile = await getAdminService(data.user?.id);
 
   if (profile?.role !== "admin") {
-    logoutAdminService();
+    if (data.session?.access_token) {
+      await logoutAdminService(data.session.access_token);
+    }
     throw new AppError(HTTP_STATUS_CODES.UNAUTHORIZED, "User not found");
   }
 
@@ -37,8 +40,8 @@ export const loginAdminService = async (email: string, password: string) => {
   };
 };
 
-export const logoutAdminService = async () => {
-  const { error } = await userClient.auth.signOut();
+export const logoutAdminService = async (accessToken: string) => {
+  const { error } = await serviceClient.auth.admin.signOut(accessToken);
   if (error) {
     throw new AppError(
       HTTP_STATUS_CODES.UNAUTHORIZED,
@@ -49,7 +52,8 @@ export const logoutAdminService = async () => {
 };
 
 export const refreshTokenAdminService = async (refreshToken: string) => {
-  const { data, error } = await userClient.auth.refreshSession({
+  const authClient = createAuthClient();
+  const { data, error } = await authClient.auth.refreshSession({
     refresh_token: refreshToken,
   });
   if (error) {

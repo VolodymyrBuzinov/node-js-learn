@@ -3,7 +3,7 @@ import { getMealByIdService } from "../meals/mealsService.js";
 import { Meal } from "../meals/mealsTypes.js";
 import { AppError } from "@/services/appError.js";
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
-import { adminClient } from "@/config/supabase.js";
+import { serviceClient } from "@/config/supabase.js";
 import type { ValidatedImageUpload } from "@/middlewares/imageUploadMiddleware.js";
 
 export const createMealAsAdminService = async (meal: Omit<Meal, "id">) => {
@@ -54,7 +54,7 @@ export const uploadMealImageService = async (
   mealSlug: string,
   image: ValidatedImageUpload
 ) => {
-  const { data: storageData, error } = await adminClient.storage
+  const { data: storageData, error } = await serviceClient.storage
     .from("meals_images")
     .upload(`${mealSlug ?? ""}/image`, image.buffer, {
       contentType: image.contentType,
@@ -72,7 +72,7 @@ export const uploadMealImageService = async (
 };
 
 export const deleteMealImageService = async (mealSlug: string) => {
-  const { error } = await adminClient.storage
+  const { error } = await serviceClient.storage
     .from("meals_images")
     .remove([`${mealSlug ?? ""}/image`]);
   if (error) {
@@ -87,7 +87,7 @@ export const updateMealImageService = async (
   mealSlug: string,
   image: ValidatedImageUpload
 ) => {
-  const { data: storageData, error } = await adminClient.storage
+  const { data: storageData, error } = await serviceClient.storage
     .from("meals_images")
     .update(`${mealSlug ?? ""}/image`, image.buffer, {
       contentType: image.contentType,

@@ -9,8 +9,9 @@ export const getAdminService = async (userId: string) => {
     },
   });
 
-  if (!admin) {
-    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "Profile not found");
+  if (!admin || admin.role !== "admin") {
+    throw new AppError(HTTP_STATUS_CODES.BAD_REQUEST, "The user is not found");
   }
+
   return admin;
 };
