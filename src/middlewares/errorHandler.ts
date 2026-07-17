@@ -6,7 +6,7 @@ export const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const requestError = err as Error & { status?: number; type?: string };
 
@@ -32,6 +32,7 @@ export const errorHandler = (
   }
 
   if (err instanceof AppError) {
+    req.log.error({ err }, "Non-operational application error");
     return res.status(err.status).json({
       error: {
         message: "Something went wrong",
@@ -40,6 +41,7 @@ export const errorHandler = (
     });
   }
 
+  req.log.error({ err }, "Unhandled request error");
   return res.status(500).json({
     error: { message: "Internal server error", code: "INTERNAL_ERROR" },
   });

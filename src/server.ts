@@ -1,5 +1,7 @@
 import express from "express";
+import { pinoHttp } from "pino-http";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import { logger } from "./config/logger.js";
 import { userRoutes } from "@/modules/user/userRoutes.js";
 import { mealsRoutes } from "@/modules/meals/mealsRoutes.js";
 import { mealsPlanRoutes } from "@/modules/meals-plan/mealsPlanRoutes.js";
@@ -15,6 +17,16 @@ import { openApiDocument } from "./openapi/openApiDocument.js";
 
 const app = express();
 
+app.use(
+  pinoHttp({
+    logger,
+    customLogLevel: (_req, res, error) => {
+      if (error || res.statusCode >= 500) return "error";
+      if (res.statusCode >= 400) return "warn";
+      return "info";
+    },
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
