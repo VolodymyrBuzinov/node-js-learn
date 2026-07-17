@@ -10,11 +10,18 @@ import { adminMealsRoutes } from "./modules/admin-meals/adminMealsRoutes.js";
 import cookieParser from "cookie-parser";
 import { adminAuthRoutes } from "./modules/admin-auth/adminAuthRoutes.js";
 import { userAuthRoutes } from "./modules/auth/authRoutes.js";
+import swaggerUi from "swagger-ui-express";
+import { openApiDocument } from "./openapi/openApiDocument.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.get("/api-docs.json", (_req, res) => {
+  res.json(openApiDocument);
+});
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 app.use("/users", userRoutes);
 app.use("/users/auth", userAuthRoutes);
