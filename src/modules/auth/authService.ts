@@ -28,7 +28,7 @@ export const loginUserService = async (email: string, password: string) => {
     auth: {
       accessToken: data.session?.access_token,
       refreshToken: data.session?.refresh_token,
-      expiresIn: data.session?.expires_at,
+      expiresAt: data.session?.expires_at ?? 0,
     },
   };
 };
@@ -56,8 +56,8 @@ export const refreshTokenService = async (refreshToken: string) => {
     );
   }
   return {
-    accessToken: data.session?.access_token,
-    refreshToken: data.session?.refresh_token,
-    expiresIn: data.session?.expires_at,
+    accessToken: data.session?.access_token ?? "",
+    refreshToken: data.session?.refresh_token ?? "",
+    expiresAt: data.session?.expires_at ?? 0,
   };
 };
