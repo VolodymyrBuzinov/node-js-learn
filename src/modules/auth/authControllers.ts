@@ -19,26 +19,29 @@ export const loginUser = async (req: Request, res: Response) => {
   );
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({
     message: "Login successful",
-    data,
+    data: data.user,
   });
 };
 
 export const logoutUser = async (req: Request, res: Response) => {
-  await logoutUserService(req.cookies.accessToken);
-  await clearAuthCookies(res, "user");
-  return res
-    .status(HTTP_STATUS_CODES.NO_CONTENT)
-    .json({ message: "Logout successful" });
+  await logoutUserService(req.cookies.userAccessToken);
+  clearAuthCookies(res, "user");
+  return res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
 };
 
 export const refreshToken = async (req: Request, res: Response) => {
-  const data = await refreshTokenService(req.cookies?.refreshToken);
-  setAuthCookies(
-    res,
-    data.accessToken,
-    data.refreshToken,
-    data.expiresAt,
-    "user"
-  );
-  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data });
+  try {
+    const data = await refreshTokenService(req.cookies?.userRefreshToken);
+    setAuthCookies(
+      res,
+      data.accessToken,
+      data.refreshToken,
+      data.expiresAt,
+      "user"
+    );
+  } catch (error) {
+    clearAuthCookies(res, "user");
+    throw error;
+  }
+  return res.status(HTTP_STATUS_CODES.SUCCESS).end();
 };

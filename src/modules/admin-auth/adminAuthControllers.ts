@@ -17,27 +17,30 @@ export const loginAdmin = async (req: Request, res: Response) => {
     data.auth.expiresAt,
     "admin"
   );
-  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data });
+  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data: data.user });
 };
 
 export const logoutAdmin = async (req: Request, res: Response) => {
-  await logoutAdminService(req.cookies.accessToken);
-  await clearAuthCookies(res, "admin");
-  return res
-    .status(HTTP_STATUS_CODES.NO_CONTENT)
-    .json({ message: "Logout successful" });
+  await logoutAdminService(req.cookies.adminAccessToken);
+  clearAuthCookies(res, "admin");
+
+  return res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
 };
 
 export const refreshTokenAdmin = async (req: Request, res: Response) => {
-  const data = await refreshTokenAdminService(req.cookies?.refreshToken);
+  try {
+    const data = await refreshTokenAdminService(req.cookies?.adminRefreshToken);
+    setAuthCookies(
+      res,
+      data.accessToken,
+      data.refreshToken,
+      data.expiresAt,
+      "admin"
+    );
+  } catch (error) {
+    clearAuthCookies(res, "admin");
+    throw error;
+  }
 
-  setAuthCookies(
-    res,
-    data.accessToken,
-    data.refreshToken,
-    data.expiresAt,
-    "admin"
-  );
-
-  return res.status(HTTP_STATUS_CODES.SUCCESS).json({ data });
+  return res.status(HTTP_STATUS_CODES.SUCCESS).end();
 };

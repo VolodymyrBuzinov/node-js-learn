@@ -5,13 +5,13 @@ import { asyncHandler } from "@/utils/asyncHandler.js";
 import { NextFunction, Request, Response } from "express";
 import { getAdminService } from "@/modules/admin/adminServices.js";
 
-const getToken = (req: Request) => {
-  const token = req.cookies?.accessToken;
+const getToken = (req: Request, role: string) => {
+  const token = req.cookies?.[`${role}AccessToken`];
   if (!token) {
     throw new AppError(
       HTTP_STATUS_CODES.UNAUTHORIZED,
       "Unauthorized",
-      "access_token_not_found"
+      `${role}_access_token_not_found`
     );
   }
   return token;
@@ -32,7 +32,7 @@ const getUserId = async (token: string) => {
 
 export const adminAuthMiddleware = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = getToken(req);
+    const token = getToken(req, "admin");
     const userId = await getUserId(token);
     await getAdminService(userId);
 
@@ -43,7 +43,7 @@ export const adminAuthMiddleware = asyncHandler(
 
 export const userAuthMiddleware = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = getToken(req);
+    const token = getToken(req, "user");
     const userId = await getUserId(token);
     res.locals.auth = { userId, role: "user" };
     next();
