@@ -1,6 +1,7 @@
 import { HTTP_STATUS_CODES } from "@/config/consts.js";
 import { ActivityLevel, Gender, User } from "@/modules/user/userTypes.js";
 import { AppError } from "@/services/appError.js";
+import { CookieOptions, Response } from "express";
 
 const ACTIVITY_MULTIPLIERS: Record<string, number> = {
   малий: 1.2,
@@ -55,4 +56,34 @@ export const matchOwnership = (userId: string, authUserId: string) => {
       "You are not the owner of this resource"
     );
   }
+};
+
+const authCookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  path: "/",
+};
+
+export const setAuthCookies = (
+  res: Response,
+  accessToken: string,
+  refreshToken: string,
+  expiresAt: number,
+  role: string
+) => {
+  res.cookie(`${role}AccessToken`, accessToken, {
+    ...authCookieOptions,
+    expires: new Date(expiresAt * 1000),
+  });
+
+  res.cookie(`${role}RefreshToken`, refreshToken, {
+    ...authCookieOptions,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+};
+
+export const clearAuthCookies = (res: Response, role: string) => {
+  res.clearCookie(`${role}AccessToken`, authCookieOptions);
+  res.clearCookie(`${role}RefreshToken`, authCookieOptions);
 };
