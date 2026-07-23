@@ -3,6 +3,8 @@ import { ActivityLevel, Gender, User } from "@/modules/user/userTypes.js";
 import { AppError } from "@/services/appError.js";
 import { CookieOptions, Response } from "express";
 
+type AuthRole = "user" | "admin";
+
 const ACTIVITY_MULTIPLIERS: Record<string, number> = {
   малий: 1.2,
   середній: 1.55,
@@ -61,7 +63,8 @@ export const matchOwnership = (userId: string, authUserId: string) => {
 const authCookieOptions: CookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  sameSite:
+    (process.env.COOKIE_SAME_SITE as CookieOptions["sameSite"]) ?? "lax",
   path: "/",
 };
 
@@ -70,7 +73,7 @@ export const setAuthCookies = (
   accessToken: string,
   refreshToken: string,
   expiresAt: number,
-  role: string
+  role: AuthRole
 ) => {
   res.cookie(`${role}AccessToken`, accessToken, {
     ...authCookieOptions,
@@ -83,7 +86,7 @@ export const setAuthCookies = (
   });
 };
 
-export const clearAuthCookies = (res: Response, role: string) => {
+export const clearAuthCookies = (res: Response, role: AuthRole) => {
   res.clearCookie(`${role}AccessToken`, authCookieOptions);
   res.clearCookie(`${role}RefreshToken`, authCookieOptions);
 };

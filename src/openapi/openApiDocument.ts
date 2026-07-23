@@ -50,8 +50,23 @@ const dateQueryParameter = {
   schema: { type: "string", format: "date", example: "2026-07-17" },
 };
 
-const accessTokenSecurity = [{ accessToken: [] }];
-const adminAccessTokenSecurity = [{ accessToken: [] }];
+const accessTokenSecurity = [{ userAccessToken: [] }];
+const adminAccessTokenSecurity = [{ adminAccessToken: [] }];
+const userRefreshTokenSecurity = [{ userRefreshToken: [] }];
+const adminRefreshTokenSecurity = [{ adminRefreshToken: [] }];
+
+const authCookieHeaders = (
+  role: "user" | "admin",
+  action: "set" | "clear"
+) => ({
+  "Set-Cookie": {
+    description:
+      action === "set"
+        ? `Sets the HttpOnly ${role}AccessToken and ${role}RefreshToken cookies.`
+        : `Clears the ${role}AccessToken and ${role}RefreshToken cookies.`,
+    schema: { type: "string" },
+  },
+});
 
 const standardProtectedErrors = {
   "400": responseRef("ValidationError"),
@@ -80,7 +95,7 @@ export const openApiDocument = {
     title: "Node JS Learn API",
     version: "1.0.0",
     description:
-      "API for user profiles, meals, meal plans, dashboards, and administration. Protected endpoints currently read Supabase tokens from accessToken and refreshToken cookies.",
+      "API for user profiles, meals, meal plans, dashboards, and administration. Supabase tokens are managed exclusively through role-specific HttpOnly cookies and are never returned in response bodies.",
   },
   servers: [
     {
@@ -106,14 +121,10 @@ export const openApiDocument = {
         summary: "Log in a user",
         requestBody: jsonBody(schemaRef("LoginRequest")),
         responses: {
-          "200": jsonResponse("Login successful.", {
-            type: "object",
-            required: ["message", "data"],
-            properties: {
-              message: { type: "string", example: "Login successful" },
-              data: schemaRef("UserAuthSession"),
-            },
-          }),
+          "200": {
+            ...dataResponse("Login successful.", schemaRef("User")),
+            headers: authCookieHeaders("user", "set"),
+          },
           "400": responseRef("ValidationError"),
           "401": responseRef("UnauthorizedError"),
           "500": responseRef("InternalServerError"),
@@ -126,7 +137,10 @@ export const openApiDocument = {
         summary: "Log out a user",
         security: accessTokenSecurity,
         responses: {
-          "204": { description: "Logout successful." },
+          "204": {
+            description: "Logout successful.",
+            headers: authCookieHeaders("user", "clear"),
+          },
           "401": responseRef("UnauthorizedError"),
           "500": responseRef("InternalServerError"),
         },
@@ -136,12 +150,12 @@ export const openApiDocument = {
       post: {
         tags: ["User authentication"],
         summary: "Refresh a user session",
-        security: [{ refreshToken: [] }],
+        security: userRefreshTokenSecurity,
         responses: {
-          "200": dataResponse(
-            "Session refreshed.",
-            schemaRef("AuthTokens")
-          ),
+          "200": {
+            description: "Session refreshed and authentication cookies rotated.",
+            headers: authCookieHeaders("user", "set"),
+          },
           "401": responseRef("UnauthorizedError"),
           "500": responseRef("InternalServerError"),
         },
@@ -339,10 +353,13 @@ export const openApiDocument = {
         summary: "Log in an administrator",
         requestBody: jsonBody(schemaRef("LoginRequest")),
         responses: {
-          "200": dataResponse(
-            "Admin login successful.",
-            schemaRef("AdminAuthSession")
-          ),
+          "200": {
+            ...dataResponse(
+              "Admin login successful.",
+              schemaRef("AdminLoginUser")
+            ),
+            headers: authCookieHeaders("admin", "set"),
+          },
           "400": responseRef("ValidationError"),
           "401": responseRef("UnauthorizedError"),
           "500": responseRef("InternalServerError"),
@@ -355,7 +372,10 @@ export const openApiDocument = {
         summary: "Log out an administrator",
         security: adminAccessTokenSecurity,
         responses: {
-          "204": { description: "Logout successful." },
+          "204": {
+            description: "Logout successful.",
+            headers: authCookieHeaders("admin", "clear"),
+          },
           "401": responseRef("UnauthorizedError"),
           "403": responseRef("ForbiddenError"),
           "500": responseRef("InternalServerError"),
@@ -366,12 +386,12 @@ export const openApiDocument = {
       post: {
         tags: ["Admin authentication"],
         summary: "Refresh an administrator session",
-        security: [{ refreshToken: [] }],
+        security: adminRefreshTokenSecurity,
         responses: {
-          "200": dataResponse(
-            "Session refreshed.",
-            schemaRef("AuthTokens")
-          ),
+          "200": {
+            description: "Session refreshed and authentication cookies rotated.",
+            headers: authCookieHeaders("admin", "set"),
+          },
           "401": responseRef("UnauthorizedError"),
           "500": responseRef("InternalServerError"),
         },
@@ -595,17 +615,30 @@ export const openApiDocument = {
   },
   components: {
     securitySchemes: {
-      accessToken: {
+      userAccessToken: {
         type: "apiKey",
         in: "cookie",
-        name: "accessToken",
-        description: "Supabase access token.",
+        name: "userAccessToken",
+        description: "HttpOnly Supabase access token for a user session.",
       },
-      refreshToken: {
+      userRefreshToken: {
         type: "apiKey",
         in: "cookie",
-        name: "refreshToken",
-        description: "Supabase refresh token.",
+        name: "userRefreshToken",
+        description: "HttpOnly Supabase refresh token for a user session.",
+      },
+      adminAccessToken: {
+        type: "apiKey",
+        in: "cookie",
+        name: "adminAccessToken",
+        description: "HttpOnly Supabase access token for an administrator session.",
+      },
+      adminRefreshToken: {
+        type: "apiKey",
+        in: "cookie",
+        name: "adminRefreshToken",
+        description:
+          "HttpOnly Supabase refresh token for an administrator session.",
       },
     },
     schemas: {
@@ -639,19 +672,6 @@ export const openApiDocument = {
             maxLength: 20,
             pattern:
               "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()[\\]{}<>\\\\|;:'\\\",.?/~`_+=-]).{8,}$",
-          },
-        },
-      },
-      AuthTokens: {
-        type: "object",
-        required: ["accessToken", "refreshToken", "expiresIn"],
-        properties: {
-          accessToken: { type: "string" },
-          refreshToken: { type: "string" },
-          expiresIn: {
-            type: "integer",
-            format: "int64",
-            description: "Supabase session expiration timestamp.",
           },
         },
       },
@@ -884,22 +904,6 @@ export const openApiDocument = {
           email: { type: "string", format: "email" },
           name: { type: "string" },
           role: { type: "string", enum: ["admin"] },
-        },
-      },
-      UserAuthSession: {
-        type: "object",
-        required: ["user", "auth"],
-        properties: {
-          user: schemaRef("User"),
-          auth: schemaRef("AuthTokens"),
-        },
-      },
-      AdminAuthSession: {
-        type: "object",
-        required: ["user", "auth"],
-        properties: {
-          user: schemaRef("AdminLoginUser"),
-          auth: schemaRef("AuthTokens"),
         },
       },
       CreateUserRequest: {

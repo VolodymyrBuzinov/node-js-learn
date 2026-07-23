@@ -1,4 +1,7 @@
 import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
 import { pinoHttp } from "pino-http";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { logger } from "./config/logger.js";
@@ -9,11 +12,10 @@ import { dashboardRoutes } from "@/modules/dashboard/dashboardRoutes.js";
 import { adminRoutes } from "./modules/admin/adminRoutes.js";
 import { adminUsersRoutes } from "./modules/admin-users/adminUsersRoutes.js";
 import { adminMealsRoutes } from "./modules/admin-meals/adminMealsRoutes.js";
-import cookieParser from "cookie-parser";
 import { adminAuthRoutes } from "./modules/admin-auth/adminAuthRoutes.js";
 import { userAuthRoutes } from "./modules/auth/authRoutes.js";
-import swaggerUi from "swagger-ui-express";
 import { openApiDocument } from "./openapi/openApiDocument.js";
+import { corsOptions } from "./config/cors.js";
 
 const app = express();
 
@@ -27,6 +29,7 @@ app.use(
     },
   })
 );
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
