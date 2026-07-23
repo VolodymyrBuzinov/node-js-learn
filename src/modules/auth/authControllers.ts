@@ -18,7 +18,6 @@ export const loginUser = async (req: Request, res: Response) => {
     "user"
   );
   return res.status(HTTP_STATUS_CODES.SUCCESS).json({
-    message: "Login successful",
     data: data.user,
   });
 };

@@ -79,7 +79,7 @@ export const setAuthCookies = (
 
   res.cookie(`${role}RefreshToken`, refreshToken, {
     ...authCookieOptions,
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    maxAge: 2 * 24 * 60 * 60 * 1000,
   });
 };
 
