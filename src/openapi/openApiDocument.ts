@@ -117,6 +117,7 @@ export const openApiDocument = {
   paths: {
     "/users/auth/login": {
       post: {
+        operationId: "userLogin",
         tags: ["User authentication"],
         summary: "Log in a user",
         requestBody: jsonBody(schemaRef("LoginRequest")),
@@ -133,6 +134,7 @@ export const openApiDocument = {
     },
     "/users/auth/logout": {
       post: {
+        operationId: "userLogout",
         tags: ["User authentication"],
         summary: "Log out a user",
         security: accessTokenSecurity,
@@ -148,6 +150,7 @@ export const openApiDocument = {
     },
     "/users/auth/refresh-token": {
       post: {
+        operationId: "userRefreshSession",
         tags: ["User authentication"],
         summary: "Refresh a user session",
         security: userRefreshTokenSecurity,
@@ -164,6 +167,7 @@ export const openApiDocument = {
     "/users/{userId}": {
       parameters: [pathParameter("userId", "User identifier.")],
       get: {
+        operationId: "getUser",
         tags: ["Users"],
         summary: "Get the authenticated user's profile",
         security: accessTokenSecurity,
@@ -174,6 +178,7 @@ export const openApiDocument = {
         },
       },
       patch: {
+        operationId: "updateUser",
         tags: ["Users"],
         summary: "Update the authenticated user's profile",
         security: accessTokenSecurity,
@@ -195,6 +200,7 @@ export const openApiDocument = {
     "/users/{userId}/image": {
       parameters: [pathParameter("userId", "User identifier.")],
       patch: {
+        operationId: "uploadUserAvatar",
         tags: ["Users"],
         summary: "Upload or replace the user's avatar",
         description:
@@ -214,6 +220,7 @@ export const openApiDocument = {
         },
       },
       delete: {
+        operationId: "deleteUserAvatar",
         tags: ["Users"],
         summary: "Delete the user's avatar",
         security: accessTokenSecurity,
@@ -226,6 +233,7 @@ export const openApiDocument = {
     },
     "/meals": {
       get: {
+        operationId: "getMeals",
         tags: ["Meals"],
         summary: "List meals",
         parameters: [
@@ -256,6 +264,7 @@ export const openApiDocument = {
     },
     "/meals/{id}": {
       get: {
+        operationId: "getMeal",
         tags: ["Meals"],
         summary: "Get a meal",
         parameters: [pathParameter("id", "Meal identifier.")],
@@ -270,6 +279,7 @@ export const openApiDocument = {
     },
     "/meals-plan/{userId}": {
       get: {
+        operationId: "getMealPlan",
         tags: ["Meal plans"],
         summary: "Get a user's meal plan for a date",
         security: accessTokenSecurity,
@@ -286,6 +296,7 @@ export const openApiDocument = {
     },
     "/meals-plan": {
       post: {
+        operationId: "createMealPlan",
         tags: ["Meal plans"],
         summary: "Create a meal plan",
         security: accessTokenSecurity,
@@ -299,6 +310,7 @@ export const openApiDocument = {
     },
     "/meals-plan/{planId}": {
       put: {
+        operationId: "updateMealPlan",
         tags: ["Meal plans"],
         summary: "Replace a meal plan",
         security: accessTokenSecurity,
@@ -313,6 +325,7 @@ export const openApiDocument = {
     },
     "/meals-plan/{planId}/reset": {
       patch: {
+        operationId: "resetMealPlan",
         tags: ["Meal plans"],
         summary: "Remove all meals from a meal plan",
         security: accessTokenSecurity,
@@ -333,6 +346,7 @@ export const openApiDocument = {
     },
     "/dashboard/{userId}": {
       get: {
+        operationId: "getDashboard",
         tags: ["Dashboard"],
         summary: "Get dashboard data for a date",
         security: accessTokenSecurity,
@@ -349,6 +363,7 @@ export const openApiDocument = {
     },
     "/admin/auth/login": {
       post: {
+        operationId: "adminLogin",
         tags: ["Admin authentication"],
         summary: "Log in an administrator",
         requestBody: jsonBody(schemaRef("LoginRequest")),
@@ -368,6 +383,7 @@ export const openApiDocument = {
     },
     "/admin/auth/logout": {
       post: {
+        operationId: "adminLogout",
         tags: ["Admin authentication"],
         summary: "Log out an administrator",
         security: adminAccessTokenSecurity,
@@ -384,6 +400,7 @@ export const openApiDocument = {
     },
     "/admin/auth/refresh-token": {
       post: {
+        operationId: "adminRefreshSession",
         tags: ["Admin authentication"],
         summary: "Refresh an administrator session",
         security: adminRefreshTokenSecurity,
@@ -399,6 +416,7 @@ export const openApiDocument = {
     },
     "/admin": {
       get: {
+        operationId: "adminGetProfile",
         tags: ["Admin profile"],
         summary: "Get the authenticated administrator",
         security: adminAccessTokenSecurity,
@@ -413,6 +431,7 @@ export const openApiDocument = {
     },
     "/admin/users": {
       get: {
+        operationId: "adminGetUsers",
         tags: ["Admin users"],
         summary: "List users",
         security: adminAccessTokenSecurity,
@@ -442,6 +461,7 @@ export const openApiDocument = {
         },
       },
       post: {
+        operationId: "adminCreateUser",
         tags: ["Admin users"],
         summary: "Create a user",
         security: adminAccessTokenSecurity,
@@ -455,6 +475,7 @@ export const openApiDocument = {
     "/admin/users/{userId}": {
       parameters: [pathParameter("userId", "User identifier.")],
       get: {
+        operationId: "adminGetUser",
         tags: ["Admin users"],
         summary: "Get a user",
         security: adminAccessTokenSecurity,
@@ -464,6 +485,7 @@ export const openApiDocument = {
         },
       },
       delete: {
+        operationId: "adminDeleteUser",
         tags: ["Admin users"],
         summary: "Delete a user",
         security: adminAccessTokenSecurity,
@@ -475,6 +497,7 @@ export const openApiDocument = {
     },
     "/admin/meals": {
       get: {
+        operationId: "adminGetMeals",
         tags: ["Admin meals"],
         summary: "List meals for administration",
         security: adminAccessTokenSecurity,
@@ -507,6 +530,7 @@ export const openApiDocument = {
         },
       },
       post: {
+        operationId: "adminCreateMeal",
         tags: ["Admin meals"],
         summary: "Create a meal",
         security: adminAccessTokenSecurity,
@@ -524,6 +548,7 @@ export const openApiDocument = {
     "/admin/meals/{mealId}": {
       parameters: [pathParameter("mealId", "Meal identifier.")],
       get: {
+        operationId: "adminGetMeal",
         tags: ["Admin meals"],
         summary: "Get a meal for administration",
         security: adminAccessTokenSecurity,
@@ -537,6 +562,7 @@ export const openApiDocument = {
         },
       },
       patch: {
+        operationId: "adminUpdateMeal",
         tags: ["Admin meals"],
         summary: "Update a meal",
         security: adminAccessTokenSecurity,
@@ -551,6 +577,7 @@ export const openApiDocument = {
         },
       },
       delete: {
+        operationId: "adminDeleteMeal",
         tags: ["Admin meals"],
         summary: "Delete a meal",
         description:
@@ -565,6 +592,7 @@ export const openApiDocument = {
     "/admin/meals/{mealSlug}/image": {
       parameters: [pathParameter("mealSlug", "Meal slug.")],
       post: {
+        operationId: "adminUploadMealImage",
         tags: ["Admin meals"],
         summary: "Upload a meal image",
         description:
@@ -584,6 +612,7 @@ export const openApiDocument = {
         },
       },
       patch: {
+        operationId: "adminUpdateMealImage",
         tags: ["Admin meals"],
         summary: "Replace a meal image",
         description:
@@ -603,6 +632,7 @@ export const openApiDocument = {
         },
       },
       delete: {
+        operationId: "adminDeleteMealImage",
         tags: ["Admin meals"],
         summary: "Delete a meal image",
         security: adminAccessTokenSecurity,
